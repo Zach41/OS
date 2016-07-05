@@ -1,0 +1,15 @@
+megs: 32
+
+romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
+vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
+
+floppya: 1_44=freedos.img, status=inserted
+floppyb: 1_44=pm.img, status=inserted
+
+boot: a
+
+log: bochsout.txt
+
+mouse: enabled=0
+
+# keyboard: enabled=1, map=/usr/local/share/bochs/keymaps/x11-pc-us.map

@@ -1,0 +1,12 @@
+# emacs file
+*~
+
+# bochs log file
+bochsout.txt
+
+# img
+*.img
+
+# compiled file
+*.com
+
