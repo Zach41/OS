@@ -9,6 +9,6 @@ bochsout.txt
 
 # compiled file
 *.com
-
+*.o
 *.bin
 
