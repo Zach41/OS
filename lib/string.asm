@@ -12,7 +12,7 @@ global	memcpy
 
 
 ; ------------------------------------------------------------------------
-; void* memcpy(void* es:pDest, void* ds:pSrc, int iSize);
+; void* memcpy(void* es:p_dst, void* ds:p_src, int size);
 ; ------------------------------------------------------------------------
 memcpy:
 	push	ebp

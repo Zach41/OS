@@ -11,4 +11,4 @@ log: bochsout.txt
 
 mouse: enabled=0
 
-# keyboard: enabled=1, map=/usr/local/share/bochs/keymaps/x11-pc-us.map
+keyboard: keymap=/usr/local/share/bochs/keymaps/x11-pc-us.map

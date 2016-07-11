@@ -1,12 +1,11 @@
 #include "type.h"
 #include "const.h"
 #include "protect.h"
+#include "proto.h"
+#include "global.h"
 
-PUBLIC void* memcpy(void* pDst, void* pSrc, int iSize);
-PUBLIC void  disp_str(char *pszInfo);
-
-PUBLIC u8            gdt_ptr[8];
-PUBLIC DESCRIPTOR    gdt[GDT_SIZE];
+/* PUBLIC void* memcpy(void* pDst, void* pSrc, int iSize); */
+/* PUBLIC void  disp_str(char *pszInfo); */
 
 PUBLIC void cstart() {
 
@@ -19,4 +18,14 @@ PUBLIC void cstart() {
 
     *p_gdt_limit = GDT_SIZE * sizeof(DESCRIPTOR) - 1;
     *p_gdt_base  = (u32)&gdt;
+
+    u32* p_idt_base  = (u32*)(&idt_ptr[2]);
+    u16* p_idt_limit = (u16*)(&idt_ptr[0]);
+
+    *p_idt_base  = (u32)&idt;
+    *p_idt_limit = IDT_SIZE * sizeof(GATE) - 1;
+
+    init_prot();
+    
+    disp_str("\n--------\"cstart\" ends--------\n");
 }
