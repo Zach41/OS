@@ -25,7 +25,8 @@ PUBLIC void init_8259A() {
     out_byte(INT_S_CTLMASK, 0x1);
 
     /* Master OCW1 */
-    out_byte(INT_M_CTLMASK, 0xFD);        // 打开键盘中断
+    /* out_byte(INT_M_CTLMASK, 0xFD);        // 打开键盘中断 */
+    out_byte(INT_M_CTLMASK, 0xFE); /* 打开时钟中断 */
 
     /* Slave OCW1 */
     out_byte(INT_S_CTLMASK, 0xFF);

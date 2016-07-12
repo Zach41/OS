@@ -9,9 +9,12 @@
 
 	extern 	cstart
 	extern	exception_handler
+	extern	disp_str
 	extern	kernel_main
 	extern	spurious_irq	; 外部中断处理函数
 
+[SECTION .data]
+	color_int_msg	db	"^", 0
 [SECTION .bss]
 	StackSpace	resb	2*1024
 	StackTop:
@@ -174,6 +177,40 @@ exception:
 	;; 外部中断
 ALIGN	16
 hwint00:
+	;; 保存寄存器的值
+	sub	esp, 4
+	pushad
+	push 	ds
+	push 	es
+	push 	fs
+	push 	gs
+	
+	mov	dx, ss
+	mov	ds, dx
+	mov	es, dx
+
+	mov 	esp, StackTop	; 切换到内核栈
+	
+	inc	byte [gs:0]
+	mov	al, EOI
+	out 	INT_M_CTL, al
+
+	push 	color_int_msg
+	call	disp_str
+	add 	esp, 4
+
+	mov	esp, [p_proc_ready] ; 离开内核栈
+	lea	eax, [esp + P_STACKTOP]
+	mov	dword [tss + TSS3_S_SP0], eax ; tss.esp0应该是当前进程的进程表中保存寄存器值的地方，即s_stackframe的最高地址处
+	
+	pop 	gs
+	pop 	fs
+	pop 	es
+	pop 	ds
+	popad
+
+	add	esp, 4
+	
 	iretd	 	; the clock
 
 ALIGN	16
