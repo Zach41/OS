@@ -5,12 +5,13 @@
 	extern 	disp_pos
 	extern  p_proc_ready
 	extern  tss
-	
+	extern	k_reenter
 
 	extern 	cstart
 	extern	exception_handler
 	extern	disp_str
 	extern	kernel_main
+	extern	delay
 	extern	spurious_irq	; 外部中断处理函数
 
 [SECTION .data]
@@ -195,14 +196,29 @@ hwint00:
 	mov	al, EOI
 	out 	INT_M_CTL, al
 
+	inc	dword [k_reenter]
+	cmp 	dword [k_reenter], 0
+	jne	.re_enter
+	
+	sti
+
 	push 	color_int_msg
 	call	disp_str
 	add 	esp, 4
 
+	;; 如果有delay，那么时钟中断不断的来，k_reenter不会有机会到-1，那么'^'就不会打印
+	;; push 	1
+	;; call	delay
+	;; add	esp, 4
+
+	cli
+
+.re_enter:
+	dec	dword [k_reenter]
+	
 	mov	esp, [p_proc_ready] ; 离开内核栈
 	lea	eax, [esp + P_STACKTOP]
 	mov	dword [tss + TSS3_S_SP0], eax ; tss.esp0应该是当前进程的进程表中保存寄存器值的地方，即s_stackframe的最高地址处
-	
 	pop 	gs
 	pop 	fs
 	pop 	es

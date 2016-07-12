@@ -15,6 +15,14 @@ void TestA() {
     }
 }
 
+/* 第二个进程的代码 */
+void TestB() {
+    while(1) {
+	disp_str("B");
+	disp_str(" ");
+	delay(1);
+    }
+}
 /* 内核的代码 */
 PUBLIC int kernel_main() {
     int text_color = 0x74;
@@ -42,6 +50,8 @@ PUBLIC int kernel_main() {
     p_proc -> regs.eflags = 0x1202;
 
     p_proc_ready = p_proc;
+
+    k_reenter = -1;
 
     restart();
     

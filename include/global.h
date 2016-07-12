@@ -13,6 +13,8 @@ EXTERN GATE       idt[IDT_SIZE];
 EXTERN PROCESS*   p_proc_ready;
 EXTERN TSS        tss;
 
+EXTERN int        k_reenter;
+
 extern PROCESS    proc_table[];	/* 进程表 */
 extern char       task_stack[];
 
