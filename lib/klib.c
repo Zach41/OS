@@ -2,6 +2,7 @@
 #include "const.h"
 #include "protect.h"
 #include "proto.h"
+#include "proc.h"
 #include "global.h"
 
 PUBLIC char *itoa(char* str, int num) {
@@ -34,4 +35,14 @@ PUBLIC void disp_int(int num) {
     char input[16];
     itoa(input, num);
     disp_str(input);
+}
+
+PUBLIC void delay(int time) {
+    for (int k=0; k<time; k++) {
+	for (int i=0; i<1000; i++) {
+	    for (int j=0; j<1000; j++) {
+		;
+	    }
+	}
+    }
 }

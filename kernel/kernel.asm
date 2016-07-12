@@ -1,11 +1,15 @@
-	SELECTOR_KERNEL_CS 	equ	8
+	%include "sconst.inc"
 
 	extern 	gdt_ptr
 	extern  idt_ptr
 	extern 	disp_pos
+	extern  p_proc_ready
+	extern  tss
+	
 
 	extern 	cstart
 	extern	exception_handler
+	extern	kernel_main
 	extern	spurious_irq	; 外部中断处理函数
 
 [SECTION .bss]
@@ -14,6 +18,8 @@
 
 [SECTION .text]
 	global 	_start
+
+	global	restart		; 进程运行入口
 
 	global 	divide_error
 	global 	single_step_exception
@@ -74,20 +80,31 @@ _start:
 	;; 加载idt
 	lidt	[idt_ptr]
 
-	
-
 	jmp	SELECTOR_KERNEL_CS:csinit
 
 csinit:
-	;; push	0
-	;; popfd
-	;; jmp	0x40:0
-	;; mov eax, 1
-	;; mov ebx, 0
-	;; div ebx
+	;; 加载tr
+	xor	eax, eax
+	mov	ax, SELECTOR_TSS
+	ltr	ax
+	jmp 	kernel_main
 
-	sti			; 开中断
-	hlt
+restart:
+	;; 初始化进程运行
+	mov	esp, [p_proc_ready]
+	lldt	[esp+P_LDT_SEL]	; 加载LDT
+	lea	eax, [esp + P_STACKTOP]
+	mov 	dword [tss + TSS3_S_SP0], eax ; ring0的SP0
+
+	pop 	gs
+	pop 	fs
+	pop 	es
+	pop 	ds
+	popad
+
+	add 	esp, 4		; 略过retaddr
+	iretd
+	
 
 divide_error:
 	push 	0xFFFFFFFF
@@ -157,7 +174,7 @@ exception:
 	;; 外部中断
 ALIGN	16
 hwint00:
-	hwint_master	0 	; the clock
+	iretd	 	; the clock
 
 ALIGN	16
 hwint01:

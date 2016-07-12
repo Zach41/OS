@@ -2,6 +2,7 @@
 #include "type.h"
 #include "protect.h"
 #include "proto.h"
+#include "proc.h"
 #include "global.h"
 
 PUBLIC void init_8259A() {

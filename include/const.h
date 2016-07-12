@@ -20,5 +20,9 @@
 #define PRIVILEGE_TASK   1
 #define PRIVILEGE_USER   3
 
+/* RPL */
+#define RPL_KRNL    SA_RPL0
+#define RPL_TASK    SA_RPL1
+#define RPL_USER    SA_RPL3
 
 #endif

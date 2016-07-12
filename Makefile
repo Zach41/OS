@@ -18,7 +18,7 @@ LDFLAGS		= -m elf_i386 -s -Ttext $(ENTRYPOINT)
 ORANGESBOOT	= boot/boot.bin boot/loader.bin
 ORANGESKERNEL   = kernel.bin
 OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
-			kernel/global.o lib/kliba.o lib/string.o lib/klib.o 
+			kernel/global.o lib/kliba.o lib/string.o lib/klib.o kernel/main.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -66,6 +66,9 @@ kernel/protect.o: kernel/protect.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/global.o: kernel/global.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/main.o: kernel/main.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/kliba.o: lib/kliba.asm
