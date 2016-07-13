@@ -10,4 +10,7 @@ typedef void (*int_handler) ();
 /* 进程任务函数指针 */
 typedef void (*task_f) ();
 
+/* 中断处理函数指针 */
+typedef void (*irq_handler) (int irq);
+
 #endif

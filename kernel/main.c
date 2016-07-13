@@ -8,26 +8,32 @@
 
 /* 操作系统第一个进程的代码 */
 void TestA() {
+    int i=0;
     while(1) {
 	disp_str("A");
 	disp_str(" ");
+	disp_int(i++);
 	delay(1);
     }
 }
 
 /* 第二个进程的代码 */
 void TestB() {
+    int i=0;
     while(1) {
 	disp_str("B");
 	disp_str(" ");
+	disp_int(i++);
 	delay(1);
     }
 }
 
 void TestC() {
+    int i=0;
     while (1) {
 	disp_str("C");
 	disp_str(" ");
+	disp_int(i++);
 	delay(1);
     }
 }
@@ -98,7 +104,7 @@ PUBLIC int kernel_main() {
 	selector_ldt += 8;
     }
 
-    k_reenter = -1;
+    k_reenter = 0;
 
     p_proc_ready = proc_table;
     

@@ -15,7 +15,8 @@ EXTERN TSS        tss;
 
 EXTERN int        k_reenter;
 
-extern PROCESS    proc_table[];	/* 进程表 */
-extern char       task_stack[];
-extern TASK       task_table[];
+extern PROCESS        proc_table[];	/* 进程表 */
+extern char           task_stack[];
+extern TASK           task_table[];
+extern irq_handler    irq_table[];
 

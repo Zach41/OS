@@ -6,6 +6,7 @@
 	extern  p_proc_ready
 	extern  tss
 	extern	k_reenter
+	extern	irq_table
 
 	extern 	cstart
 	extern	exception_handler
@@ -62,10 +63,27 @@
 	global 	hwint15
 
 %macro	hwint_master	1
-	push	%1
-	call 	spurious_irq
-	add	esp, 4
-	hlt
+	call	save
+	;; save之后在内核堆栈当中
+	in 	al, INT_M_CTLMASK
+	or 	al, (1 << %1)	;　屏蔽当前中断
+	out	INT_M_CTLMASK, al
+
+	mov	al, EOI
+	out 	INT_M_CTL, al
+
+	sti
+
+	push 	%1
+	call	[irq_table + 4 * %1] ; 中断处理程序
+	pop 	ecx
+	cli
+
+	in 	al, INT_M_CTLMASK
+	and	al, ~(1 << %1)	;开启当前中断
+	out	INT_M_CTLMASK, al
+
+	ret
 %endmacro
 
 %macro	hwint_slave 	1
@@ -100,7 +118,8 @@ restart:
 	lldt	[esp+P_LDT_SEL]	; 加载LDT
 	lea	eax, [esp + P_STACKTOP]
 	mov 	dword [tss + TSS3_S_SP0], eax ; ring0的SP0
-
+restart_reenter:
+	dec 	dword [k_reenter]
 	pop 	gs
 	pop 	fs
 	pop 	es
@@ -109,6 +128,30 @@ restart:
 
 	add 	esp, 4		; 略过retaddr
 	iretd
+
+save:
+	pushad
+	push 	ds
+	push 	es
+	push 	fs
+	push 	gs
+	mov	dx, ss
+	mov	ds, dx
+	mov 	es, dx
+
+	mov 	eax, esp	; eax <- 进程控制块起始地址
+
+	inc	dword [k_reenter]
+	cmp 	dword [k_reenter], 0
+	jnz	.1
+
+	mov	esp, StackTop	;　切换内核栈
+	push 	restart
+	jmp 	[eax + RETADR - P_STACKBASE] ; 返回到调用call的下一条指令
+
+.1:
+	push 	restart_reenter
+	jmp 	[eax + RETADR - P_STACKBASE]
 	
 
 divide_error:
@@ -179,52 +222,31 @@ exception:
 	;; 外部中断
 ALIGN	16
 hwint00:
-	;; 保存寄存器的值
-	sub	esp, 4
-	pushad
-	push 	ds
-	push 	es
-	push 	fs
-	push 	gs
+	;; call	save
+
+	;; in 	al, INT_M_CTLMASK
+	;; or	al, 1
+	;; out	INT_M_CTLMASK, al ; 关闭时钟中断
+	;; ;; inc	byte [gs:0]
+	;; mov	al, EOI
+	;; out 	INT_M_CTL, al
 	
-	mov	dx, ss
-	mov	ds, dx
-	mov	es, dx
+	;; sti
 
-	inc	byte [gs:0]
-	mov	al, EOI
-	out 	INT_M_CTL, al
+	;; ;;  总是执行
+	;; push	0
+	;; call	clock_handler
+	;; add	esp, 4
 
-	inc	dword [k_reenter]
-	cmp 	dword [k_reenter], 0
-	jne	.re_enter
+	;; cli
 
-	mov 	esp, StackTop	; 切换到内核栈
-	sti
+	;; in 	al, INT_M_CTLMASK
+	;; or	al, 0
+	;; out 	INT_M_CTLMASK, al ; 打开时钟中断
 
-	push	0
-	call	clock_handler
-	add	esp, 4
-
-	cli
-
-	mov	esp, [p_proc_ready] ; 离开内核栈
-	lldt	[esp + P_LDT_SEL]   ;　加载对应的LDT
-	lea	eax, [esp + P_STACKTOP]
-	mov	dword [tss + TSS3_S_SP0], eax ; tss.esp0应该是当前进程的进程表中保存寄存器值的地方，即s_stackframe的最高地址处
-
-.re_enter:
-	dec	dword [k_reenter]
-	pop 	gs
-	pop 	fs
-	pop 	es
-	pop 	ds
-	popad
-
-	add	esp, 4
+	;; ret			; 跳到之前push的地址执行
+	hwint_master	0
 	
-	iretd	 	; the clock
-
 ALIGN	16
 hwint01:
 	hwint_master	1	; keyboard

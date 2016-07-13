@@ -5,6 +5,7 @@
 ;                                                       Forrest Yu, 2005
 ; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+%include	"sconst.inc"
 
 ; 导入全局变量
 extern	disp_pos
@@ -16,6 +17,9 @@ global	disp_str
 global	disp_color_str
 global	out_byte
 global	in_byte
+global	enable_irq
+global	disable_irq
+	
 
 ; ========================================================================
 ;                  void disp_str(char * pszInfo);
@@ -114,4 +118,66 @@ in_byte:
 	nop	; 一点延迟
 	nop
 	ret
+	
+;=========================================================================
+;	void disable_irq(int irq);
+;=========================================================================
+disable_irq:
+	mov	ecx, [esp+4]	; irq -> ecx
+	pushf			; 用到了标志寄存器
+	cli
 
+	mov 	ah, 1
+	rol	ah, cl		; ah = (1 << (irq % 8))
+	cmp 	cl, 8
+	jae	disable_8	; irq >= 8, slave 8259
+
+disable_0:
+	in 	al, INT_M_CTLMASK
+	test	al, ah		; al & ah, without changing al, ah, but infects flags
+	jnz	disable_already
+	or	al, ah
+	out 	INT_M_CTLMASK, al
+	popf
+	ret
+
+disable_8:
+	in 	al, INT_M_CTLMASK
+	test	al, ah
+	jnz	disable_already
+	or 	al, ah
+	out 	INT_S_CTLMASK, al
+	popf
+	ret
+
+disable_already:
+	popf
+	ret
+
+
+;========================================================================
+;	void enable_irq(int irq);
+;========================================================================
+enable_irq:
+	mov 	ecx, [esp + 4]
+	pushf
+	mov	ah, ~1
+	rol	al, cl		; ah = ~(1 << (irq % 8))
+	cmp 	cl, 8
+	jae	enable_8	; irq >=9, slave 9259
+
+enable_0:
+	in 	al, INT_M_CTLMASK
+	and	al, ah
+	out 	INT_M_CTLMASK, al
+	popf
+	ret
+
+enable_8:
+	in 	al, INT_S_CTLMASK
+	and	al, ah
+	out 	INT_S_CTLMASK, al
+	popf
+	ret
+
+	
