@@ -10,3 +10,27 @@ PUBLIC int sys_get_ticks() {
     /* 返回当前的时钟数 */
     return ticks;
 }
+
+
+/* 进程调度函数 */
+PUBLIC void schedule() {
+    /* 优先级最大的优先执行 */
+    PROCESS* p;
+    int largest_ticks = 0;
+
+    while (!largest_ticks) {
+	for (p = proc_table; p < proc_table + NR_TASKS; p++) {
+	    if (p -> ticks > largest_ticks) {
+		p_proc_ready = p;
+		largest_ticks = p -> ticks;
+	    }
+	    
+        /* if (!largest_ticks) { */
+       	/* /\* 全部为0, 那么重新赋值 *\/ */
+	/*     for (p = proc_table; p < proc_table + NR_TASKS; p++) { */
+	/* 	p -> ticks = p -> priority; */
+	/*     } */
+        /* } */
+        }
+    }
+}

@@ -40,7 +40,8 @@ PUBLIC void clock_handler(int);
 
 
 /* proc.c */
-PUBLIC int sys_get_ticks();
+PUBLIC int  sys_get_ticks();
+PUBLIC void schedule();
 
 /* syscall.asm */
 PUBLIC int get_ticks();

@@ -12,3 +12,5 @@ bochsout.txt
 *.o
 *.bin
 
+# bochs snapshot file
+snapshot.txt

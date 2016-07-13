@@ -9,11 +9,15 @@
 /* 操作系统第一个进程的代码 */
 void TestA() {
     while(1) {
-	disp_str("A");
-	disp_str(" ");
-	disp_int(get_ticks());
+	/* disp_str("A"); */
+	/* disp_str(" "); */
+	/* disp_int(get_ticks()); */
 	/* delay(1); */
-	milli_delay(1000);
+	/* milli_delay(200); */
+
+	disp_color_str("A.", BRIGHT | MAKE_COLOR(BLACK, RED));
+	/* disp_int(get_ticks()); */
+	milli_delay(200);
     }
 }
 
@@ -21,22 +25,28 @@ void TestA() {
 void TestB() {
     int i=0;
     while(1) {
-	disp_str("B");
-	disp_str(" ");
-	disp_int(i++);
+	/* disp_str("B"); */
+	/* disp_str(" "); */
+	/* disp_int(i++); */
 	/* delay(1); */
-	milli_delay(1000);
+	/* milli_delay(200); */
+	disp_color_str("B.", BRIGHT | MAKE_COLOR(BLACK, RED));
+	/* disp_int(get_ticks()); */
+	milli_delay(200);
     }
 }
 
 void TestC() {
     int i=0;
     while (1) {
-	disp_str("C");
-	disp_str(" ");
-	disp_int(i++);
+	/* disp_str("C"); */
+	/* disp_str(" "); */
+	/* disp_int(i++); */
 	/* delay(1); */
-	milli_delay(1000);
+	/* milli_delay(200); */
+	disp_color_str("C.", BRIGHT | MAKE_COLOR(BLACK, RED));
+	/* disp_int(get_ticks); */
+	milli_delay(200);
     }
 }
 
@@ -67,12 +77,27 @@ PUBLIC int kernel_main() {
     /* p_proc -> regs.eflags = 0x1202; */
 
     /* p_proc_ready = p_proc; */
+    
+    /* 清空屏幕 */
+    disp_pos = 0;
+    /* for (int i=0; i<80*25; i++) { */
+    /* 	disp_str(" "); */
+    /* } */
+    /* disp_pos = 0; */
 
     TASK*    p_task       = task_table;
     PROCESS* p_proc       = proc_table;
     char*    p_task_stack = task_stack + STACK_SIZE_TOTAL;
     u16      selector_ldt = SELECTOR_LDT_FIRST;
 
+    /* 测试代码 */
+    proc_table[0].priority = 160;
+    proc_table[0].ticks    = 160;
+    proc_table[1].priority = 100;
+    proc_table[1].ticks    = 100;
+    proc_table[2].priority = 40;
+    proc_table[2].ticks    = 40;
+    
     for (int i=0; i<NR_TASKS; i++) {
 	strcpy(p_proc -> p_name, p_task -> name);
 	p_proc -> pid = i;

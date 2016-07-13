@@ -53,4 +53,21 @@
 /* 系统调用相关的变量 */
 #define NR_SYS_CALL    1
 
+
+/* 一些有用的定义 */
+/* Boolean */
+#define TRUE    1
+#define FALSE   0
+
+/* Color */
+#define BLACK    0x0
+#define WHITE    0x7
+#define RED      0x4
+#define GREEN    0x2
+#define BLUE     0x1
+#define FLASH    0x80
+#define BRIGHT   0x08
+
+#define MAKE_COLOR(x, y) (x | y) /* (BG, FG) */
+
 #endif

@@ -26,6 +26,10 @@ typedef struct s_proc {
 
     u16            ldt_sel;		/* 在GDT表中的该进程的LDT表的选择子 */
     DESCRIPTOR     ldts[LDT_SIZE];	/* 本地的LDT表 */
+
+    int            ticks;	        /* 剩下的时钟数 */
+    int            priority;		/* 优先级 */
+    
     u32            pid;			/* 进程ID */
     char           p_name[16];		/* 进程名 */
 }PROCESS;
@@ -38,7 +42,7 @@ typedef struct s_task {
 }TASK;
 
 /* 任务的个数 */
-#define NR_TASKS            1
+#define NR_TASKS            3
 
 #define STACK_SIZE_TESTA    0x8000
 #define STACK_SIZE_TESTB    STACK_SIZE_TESTA
