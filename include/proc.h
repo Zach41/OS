@@ -30,8 +30,18 @@ typedef struct s_proc {
     char           p_name[16];		/* 进程名 */
 }PROCESS;
 
+/* 任务结构 */
+typedef struct s_task {
+    task_f  initial_eip;
+    int     stacksize;
+    char    name[32];
+}TASK;
+
 /* 任务的个数 */
-#define NR_TASKS            1
+#define NR_TASKS            3
 
 #define STACK_SIZE_TESTA    0x8000
-#define STACK_SIZE_TOTAL    STACK_SIZE_TESTA
+#define STACK_SIZE_TESTB    STACK_SIZE_TESTA
+#define STACK_SIZE_TESTC    STACK_SIZE_TESTA
+#define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA + STACK_SIZE_TESTB + STACK_SIZE_TESTC)
+

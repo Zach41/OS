@@ -7,6 +7,7 @@ PUBLIC void    disp_color_str(char* info, int text_color);
 /* string.asm */
 PUBLIC void*   memcpy(void* pDst, void* pSrc, int iSize);
 PUBLIC void    memset(void* s, char c, int size);
+PUBLIC char*   strcpy(char* pDst, char* pSrc);
 
 /* klib.c */
 PUBLIC char*   itoa(char* str, int num);
@@ -26,5 +27,9 @@ PUBLIC void    restart();
 
 /* main.c */
 PUBLIC void TestA();
+PUBLIC void TestB();
+PUBLIC void TestC();
+/* clock.c */
+PUBLIC void clock_handler(int);
 
 

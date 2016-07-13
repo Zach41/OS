@@ -7,4 +7,7 @@ typedef unsigned char   u8;
 
 typedef void (*int_handler) ();
 
+/* 进程任务函数指针 */
+typedef void (*task_f) ();
+
 #endif

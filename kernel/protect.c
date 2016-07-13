@@ -108,13 +108,24 @@ PUBLIC void init_prot() {
     init_idt_desc(INT_VECTOR_IRQ8 + 5, DA_386IGate, hwint13, PRIVILEGE_KRNL);
     init_idt_desc(INT_VECTOR_IRQ8 + 6, DA_386IGate, hwint14, PRIVILEGE_KRNL);
     init_idt_desc(INT_VECTOR_IRQ8 + 7, DA_386IGate, hwint15, PRIVILEGE_KRNL);
-
+    
     /* 初始化进程LDT描述符 */
-    init_descriptor(&gdt[SELECTOR_LDT_FIRST >> 3],
-		    vir2phys(seg2phys(SELECTOR_KERNEL_CS), proc_table[0].ldts),
-		    LDT_SIZE * sizeof(DESCRIPTOR) - 1,
-		    DA_LDT);
-
+    /* init_descriptor(&gdt[SELECTOR_LDT_FIRST >> 3], */
+    /* 		    vir2phys(seg2phys(SELECTOR_KERNEL_CS), proc_table[0].ldts), */
+    /* 		    LDT_SIZE * sizeof(DESCRIPTOR) - 1, */
+    /* 		    DA_LDT); */
+    /* 初始化GDT中的进程LDT表描述符 */
+    PROCESS*    p_proc       = proc_table;
+    u16         selector_ldt = SELECTOR_LDT_FIRST;
+    for (int i=0; i<NR_TASKS; i++) {
+	init_descriptor(&gdt[selector_ldt >> 3],
+			vir2phys(seg2phys(SELECTOR_KERNEL_DS), p_proc -> ldts),
+			LDT_SIZE * sizeof(DESCRIPTOR) - 1,
+			DA_LDT);
+	p_proc++;
+	selector_ldt += 8;
+    }
+    
     memset(&tss, 0, sizeof(tss));
     tss.ss0 = SELECTOR_KERNEL_DS;
     init_descriptor(&gdt[SELECTOR_TSS >> 3],
