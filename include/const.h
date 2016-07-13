@@ -15,6 +15,16 @@
 #define INT_S_CTL        0xA0	/* 从片 */
 #define INT_S_CTLMASK    0xA1
 
+/* 8253计数器端口 */
+#define TIMER_MODE       0x43
+#define TIMER0           0x40
+#define TIMER1           0x41
+#define TIMER2           0x42
+
+#define TIMER_FREQ       1193182L
+#define HZ               100	/* 每10ms产生一次中断 */
+#define RATE_GENERATOR   0x34	/* 模式控制寄存器的值，00110100 */
+
 /* 权限 */
 #define PRIVILEGE_KRNL   0
 #define PRIVILEGE_TASK   1
@@ -39,5 +49,8 @@
 #define FLOPPY_IRQ    6
 #define PRINTER_IRQ   7
 #define AT_WINI_IRQ   14
+
+/* 系统调用相关的变量 */
+#define NR_SYS_CALL    1
 
 #endif

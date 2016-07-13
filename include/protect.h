@@ -134,6 +134,9 @@ typedef struct s_tss {
 #define INT_VECTOR_PAGE_FAULT    0xE
 #define INT_VECTOR_COPROC_ERR    0x10
 
+/* 系统调用的中断号 */
+#define INT_VECTOR_SYS_CALL      0x90
+
 /* 线性地址到物理地址 */
 #define vir2phys(seg_base, vir) (u32)(((u32)seg_base) + (u32)vir)
 

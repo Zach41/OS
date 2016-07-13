@@ -7,6 +7,7 @@
 	extern  tss
 	extern	k_reenter
 	extern	irq_table
+	extern	sys_call_table
 
 	extern 	cstart
 	extern	exception_handler
@@ -26,6 +27,7 @@
 	global 	_start
 
 	global	restart		; 进程运行入口
+	global 	sys_call	; 系统调用入口
 
 	global 	divide_error
 	global 	single_step_exception
@@ -139,7 +141,7 @@ save:
 	mov	ds, dx
 	mov 	es, dx
 
-	mov 	eax, esp	; eax <- 进程控制块起始地址
+	mov 	esi, esp	; eax <- 进程控制块起始地址
 
 	inc	dword [k_reenter]
 	cmp 	dword [k_reenter], 0
@@ -147,11 +149,11 @@ save:
 
 	mov	esp, StackTop	;　切换内核栈
 	push 	restart
-	jmp 	[eax + RETADR - P_STACKBASE] ; 返回到调用call的下一条指令
+	jmp 	[esi + RETADR - P_STACKBASE] ; 返回到调用call的下一条指令
 
 .1:
 	push 	restart_reenter
-	jmp 	[eax + RETADR - P_STACKBASE]
+	jmp 	[esi + RETADR - P_STACKBASE]
 	
 
 divide_error:
@@ -308,3 +310,13 @@ hwint14:
 ALIGN	16	
 hwint15:
 	hwint_slave	15
+
+	;; 系统调用处理函数
+sys_call:	
+	call	save
+	sti
+
+	call	[sys_call_table + eax * 4]
+	mov	[esi + EAXREG - P_STACKBASE], eax ; 将系统调用返回值放入进程控制块的EAX寄存器，以便在进程恢复以后eax中装的是正确的返回值
+	cli
+	ret

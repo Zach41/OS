@@ -15,8 +15,12 @@ EXTERN TSS        tss;
 
 EXTERN int        k_reenter;
 
+/* 系统时钟数 */
+EXTERN int        ticks;
+
 extern PROCESS        proc_table[];	/* 进程表 */
 extern char           task_stack[];
 extern TASK           task_table[];
 extern irq_handler    irq_table[];
+extern system_call    sys_call_table[];
 

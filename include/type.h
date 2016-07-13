@@ -13,4 +13,7 @@ typedef void (*task_f) ();
 /* 中断处理函数指针 */
 typedef void (*irq_handler) (int irq);
 
+/* 系统调用的函数指针 */
+typedef void* system_call;
+
 #endif

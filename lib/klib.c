@@ -46,3 +46,12 @@ PUBLIC void delay(int time) {
 	}
     }
 }
+
+/* 更精确的延迟函数 */
+/* 延迟milli_sec毫秒 */
+PUBLIC void milli_delay(int milli_sec) {
+    int ticks = get_ticks();
+    while (((get_ticks() - ticks) * 1000 / HZ) < milli_sec) {
+	;
+    }
+}

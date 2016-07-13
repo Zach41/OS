@@ -15,6 +15,7 @@ PUBLIC char*   strcpy(char* pDst, char* pSrc);
 PUBLIC char*   itoa(char* str, int num);
 PUBLIC void    disp_int(int num);
 PUBLIC void    delay(int time);
+PUBLIC void    milli_delay(int milli_sec);
 
 /* i8259.c */
 PUBLIC void    init_8259A();
@@ -27,12 +28,23 @@ PUBLIC u32     seg2phys(u16 seg);
 
 /* kernel.asm */
 PUBLIC void    restart();
+PUBLIC void    sys_call();
 
 /* main.c */
 PUBLIC void TestA();
 PUBLIC void TestB();
 PUBLIC void TestC();
+
 /* clock.c */
 PUBLIC void clock_handler(int);
+
+
+/* proc.c */
+PUBLIC int sys_get_ticks();
+
+/* syscall.asm */
+PUBLIC int get_ticks();
+
+
 
 

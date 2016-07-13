@@ -8,12 +8,12 @@
 
 /* 操作系统第一个进程的代码 */
 void TestA() {
-    int i=0;
     while(1) {
 	disp_str("A");
 	disp_str(" ");
-	disp_int(i++);
-	delay(1);
+	disp_int(get_ticks());
+	/* delay(1); */
+	milli_delay(1000);
     }
 }
 
@@ -24,7 +24,8 @@ void TestB() {
 	disp_str("B");
 	disp_str(" ");
 	disp_int(i++);
-	delay(1);
+	/* delay(1); */
+	milli_delay(1000);
     }
 }
 
@@ -34,7 +35,8 @@ void TestC() {
 	disp_str("C");
 	disp_str(" ");
 	disp_int(i++);
-	delay(1);
+	/* delay(1); */
+	milli_delay(1000);
     }
 }
 
@@ -105,6 +107,14 @@ PUBLIC int kernel_main() {
     }
 
     k_reenter = 0;
+
+    ticks = 0;
+
+    /* 设置8253 */
+    out_byte(TIMER_MODE, RATE_GENERATOR);
+    out_byte(TIMER0, (u8)(TIMER_FREQ / HZ));        /* 先写低位 */
+    out_byte(TIMER0, (u8)((TIMER_FREQ / HZ) >> 8)); /* 再写高位 */
+    
 
     p_proc_ready = proc_table;
     

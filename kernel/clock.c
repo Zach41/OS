@@ -7,10 +7,9 @@
 #include "global.h"
 
 PUBLIC void clock_handler(int irq) {
-    disp_str("#");
-
+    /* 时钟数加1 */
+    ticks++;
     if (k_reenter != 0) {
-	disp_str("!");
 	return;
     }
     p_proc_ready++;

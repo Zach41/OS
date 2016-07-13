@@ -87,6 +87,10 @@ PUBLIC void init_prot() {
     init_idt_desc(INT_VECTOR_PAGE_FAULT, DA_386IGate, page_fault, PRIVILEGE_KRNL);
     init_idt_desc(INT_VECTOR_COPROC_ERR, DA_386IGate, copr_error, PRIVILEGE_KRNL);
 
+    /* 初始化系统调用的中断描述符 */
+    init_idt_desc(INT_VECTOR_SYS_CALL, DA_386IGate, sys_call, PRIVILEGE_USER);
+    
+
     /* 初始化外部中断 */
 
     // 主8259
