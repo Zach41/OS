@@ -19,7 +19,8 @@ ORANGESBOOT	= boot/boot.bin boot/loader.bin
 ORANGESKERNEL   = kernel.bin
 OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/global.o lib/kliba.o lib/string.o lib/klib.o kernel/main.o \
-		kernel/clock.o kernel/syscall.o kernel/proc.o
+		kernel/clock.o kernel/syscall.o kernel/proc.o kernel/keyboard.o \
+		kernel/tty.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -80,6 +81,12 @@ kernel/proc.o: kernel/proc.c
 
 kernel/syscall.o: kernel/syscall.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
+
+kernel/keyboard.o: kernel/keyboard.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/tty.o: kernel/tty.c
+	$(CC) $(CFLAGS) -o $@ $<
 
 lib/kliba.o: lib/kliba.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<

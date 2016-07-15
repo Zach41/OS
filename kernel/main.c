@@ -15,9 +15,9 @@ void TestA() {
 	/* delay(1); */
 	/* milli_delay(200); */
 
-	disp_color_str("A.", BRIGHT | MAKE_COLOR(BLACK, RED));
+	/* disp_color_str("A.", BRIGHT | MAKE_COLOR(BLACK, RED)); */
 	/* disp_int(get_ticks()); */
-	milli_delay(200);
+	milli_delay(20);
     }
 }
 
@@ -30,9 +30,9 @@ void TestB() {
 	/* disp_int(i++); */
 	/* delay(1); */
 	/* milli_delay(200); */
-	disp_color_str("B.", BRIGHT | MAKE_COLOR(BLACK, RED));
+	/* disp_color_str("B.", BRIGHT | MAKE_COLOR(BLACK, RED)); */
 	/* disp_int(get_ticks()); */
-	milli_delay(200);
+	milli_delay(20);
     }
 }
 
@@ -44,9 +44,10 @@ void TestC() {
 	/* disp_int(i++); */
 	/* delay(1); */
 	/* milli_delay(200); */
-	disp_color_str("C.", BRIGHT | MAKE_COLOR(BLACK, RED));
-	/* disp_int(get_ticks); */
-	milli_delay(200);
+	/* disp_color_str("C.", BRIGHT | MAKE_COLOR(BLACK, RED)); */
+	/* disp_int(get_ticks()); */
+	milli_delay(20);
+
     }
 }
 
@@ -56,47 +57,19 @@ PUBLIC int kernel_main() {
 
     disp_color_str("--------Kernel Main Starts--------\n", text_color);
 
-    /* PROCESS* p_proc = proc_table; /\* p_proc指向进程表第一个进程控制块 *\/ */
-
-    /* p_proc -> ldt_sel = SELECTOR_LDT_FIRST; */
-    /* /\* 拷贝描述符到本地 *\/ */
-    /* memcpy(&p_proc -> ldts[0], &gdt[SELECTOR_KERNEL_CS >> 3], sizeof(DESCRIPTOR)); */
-    /* memcpy(&p_proc -> ldts[1], &gdt[SELECTOR_KERNEL_DS >> 3], sizeof(DESCRIPTOR)); */
-    /* p_proc -> ldts[0].attr1 = DA_C | PRIVILEGE_TASK << 5; */
-    /* p_proc -> ldts[1].attr1 = DA_DRW | PRIVILEGE_TASK << 5; */
-
-    /* /\* 设置寄存器 *\/ */
-    /* p_proc -> regs.cs = (0 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK; */
-    /* p_proc -> regs.ds = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK; */
-    /* p_proc -> regs.es = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK; */
-    /* p_proc -> regs.fs = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK; */
-    /* p_proc -> regs.ss = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK; */
-    /* p_proc -> regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK ) | RPL_TASK; */
-    /* p_proc -> regs.eip = (u32)TestA; */
-    /* p_proc -> regs.esp = (u32)task_stack + STACK_SIZE_TOTAL; */
-    /* p_proc -> regs.eflags = 0x1202; */
-
-    /* p_proc_ready = p_proc; */
-    
-    /* 清空屏幕 */
-    disp_pos = 0;
-    /* for (int i=0; i<80*25; i++) { */
-    /* 	disp_str(" "); */
-    /* } */
-    /* disp_pos = 0; */
-
     TASK*    p_task       = task_table;
     PROCESS* p_proc       = proc_table;
     char*    p_task_stack = task_stack + STACK_SIZE_TOTAL;
     u16      selector_ldt = SELECTOR_LDT_FIRST;
 
     /* 测试代码 */
-    proc_table[0].priority = 160;
-    proc_table[0].ticks    = 160;
-    proc_table[1].priority = 100;
-    proc_table[1].ticks    = 100;
-    proc_table[2].priority = 40;
-    proc_table[2].ticks    = 40;
+    proc_table[0].priority = 20;
+    proc_table[0].ticks    = 20;
+    proc_table[1].priority = 20;
+    proc_table[1].ticks    = 20;
+    proc_table[2].priority = 20;
+    proc_table[2].ticks    = 20;
+    proc_table[3].priority = proc_table[3].ticks = 100;
     
     for (int i=0; i<NR_TASKS; i++) {
 	strcpy(p_proc -> p_name, p_task -> name);
@@ -130,20 +103,17 @@ PUBLIC int kernel_main() {
 
 	selector_ldt += 8;
     }
-
+    
+    init_clock();
+    init_keyboard();
+    
     k_reenter = 0;
 
     ticks = 0;
 
-    /* 设置8253 */
-    out_byte(TIMER_MODE, RATE_GENERATOR);
-    out_byte(TIMER0, (u8)(TIMER_FREQ / HZ));        /* 先写低位 */
-    out_byte(TIMER0, (u8)((TIMER_FREQ / HZ) >> 8)); /* 再写高位 */
-    
-
     p_proc_ready = proc_table;
     
     restart();
-    
-    while (1){}
+
+    while (TRUE) {}
 }

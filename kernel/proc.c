@@ -25,12 +25,12 @@ PUBLIC void schedule() {
 		largest_ticks = p -> ticks;
 	    }
 	    
-        /* if (!largest_ticks) { */
-       	/* /\* 全部为0, 那么重新赋值 *\/ */
-	/*     for (p = proc_table; p < proc_table + NR_TASKS; p++) { */
-	/* 	p -> ticks = p -> priority; */
-	/*     } */
-        /* } */
+        if (!largest_ticks) {
+       	/* 全部为0, 那么重新赋值 */
+	    for (p = proc_table; p < proc_table + NR_TASKS; p++) {
+		p -> ticks = p -> priority;
+	    }
+        }
         }
     }
 }

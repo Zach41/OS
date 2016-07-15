@@ -224,34 +224,11 @@ exception:
 	;; 外部中断
 ALIGN	16
 hwint00:
-	;; call	save
-
-	;; in 	al, INT_M_CTLMASK
-	;; or	al, 1
-	;; out	INT_M_CTLMASK, al ; 关闭时钟中断
-	;; ;; inc	byte [gs:0]
-	;; mov	al, EOI
-	;; out 	INT_M_CTL, al
-	
-	;; sti
-
-	;; ;;  总是执行
-	;; push	0
-	;; call	clock_handler
-	;; add	esp, 4
-
-	;; cli
-
-	;; in 	al, INT_M_CTLMASK
-	;; or	al, 0
-	;; out 	INT_M_CTLMASK, al ; 打开时钟中断
-
-	;; ret			; 跳到之前push的地址执行
 	hwint_master	0
 	
 ALIGN	16
 hwint01:
-	hwint_master	1	; keyboard
+	hwint_master	1
 
 ALIGN 	16	
 hwint02:

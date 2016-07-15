@@ -20,3 +20,13 @@ PUBLIC void clock_handler(int irq) {
     }
     schedule();
 }
+
+PUBLIC void init_clock() {
+    /* 设置8253 */
+    out_byte(TIMER_MODE, RATE_GENERATOR);
+    out_byte(TIMER0, (u8)(TIMER_FREQ / HZ));        /* 先写低位 */
+    out_byte(TIMER0, (u8)((TIMER_FREQ / HZ) >> 8)); /* 再写高位 */
+
+    put_irq_handler(CLOCK_IRQ, clock_handler);
+    enable_irq(CLOCK_IRQ);
+}

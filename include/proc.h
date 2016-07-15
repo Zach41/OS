@@ -1,3 +1,6 @@
+#ifndef _ZACH_PROC_H_
+#define _ZACH_PROC_H_
+
 /* stack frame */
 typedef struct s_stackframe {
     u32    gs;
@@ -42,10 +45,14 @@ typedef struct s_task {
 }TASK;
 
 /* 任务的个数 */
-#define NR_TASKS            3
+#define NR_TASKS            4
 
 #define STACK_SIZE_TESTA    0x8000
 #define STACK_SIZE_TESTB    STACK_SIZE_TESTA
 #define STACK_SIZE_TESTC    STACK_SIZE_TESTA
-#define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA + STACK_SIZE_TESTB + STACK_SIZE_TESTC)
+#define STACK_SIZE_TTY      STACK_SIZE_TESTA
+#define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA + STACK_SIZE_TESTB + STACK_SIZE_TESTC + \
+			     STACK_SIZE_TTY)
 
+
+#endif

@@ -25,8 +25,8 @@ PUBLIC void init_8259A() {
     out_byte(INT_S_CTLMASK, 0x1);
 
     /* Master OCW1 */
-    /* out_byte(INT_M_CTLMASK, 0xFD);        // 打开键盘中断 */
-    out_byte(INT_M_CTLMASK, 0xFF); /* 打开时钟中断 */
+    /* out_byte(INT_M_CTLMASK, 0xFD);   */
+    out_byte(INT_M_CTLMASK, 0xFF); 
 
     /* Slave OCW1 */
     out_byte(INT_S_CTLMASK, 0xFF);
@@ -34,9 +34,6 @@ PUBLIC void init_8259A() {
     for (int i=0; i<NR_IRQ; i++) {
 	irq_table[i] = spurious_irq;
     }
-
-    put_irq_handler(0, clock_handler);
-    enable_irq(0);
 }
 
 PUBLIC void spurious_irq(int irq) {

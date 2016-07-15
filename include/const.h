@@ -53,6 +53,8 @@
 /* 系统调用相关的变量 */
 #define NR_SYS_CALL    1
 
+/* 键盘相关变量 */
+#define KB_DATA       0x60
 
 /* 一些有用的定义 */
 /* Boolean */
