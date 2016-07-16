@@ -123,7 +123,7 @@ PUBLIC void init_prot() {
     /* 初始化GDT中的进程LDT表描述符 */
     PROCESS*    p_proc       = proc_table;
     u16         selector_ldt = SELECTOR_LDT_FIRST;
-    for (int i=0; i<NR_TASKS; i++) {
+    for (int i=0; i<NR_TASKS + NR_PROCS; i++) {
 	init_descriptor(&gdt[selector_ldt >> 3],
 			vir2phys(seg2phys(SELECTOR_KERNEL_DS), p_proc -> ldts),
 			LDT_SIZE * sizeof(DESCRIPTOR) - 1,

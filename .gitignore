@@ -14,3 +14,9 @@ bochsout.txt
 
 # bochs snapshot file
 snapshot.txt
+
+#GTAG files
+GPATH
+GRTAGS
+GTAGS
+

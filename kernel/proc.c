@@ -21,7 +21,7 @@ PUBLIC void schedule() {
     int largest_ticks = 0;
 
     while (!largest_ticks) {
-	for (p = proc_table; p < proc_table + NR_TASKS; p++) {
+	for (p = proc_table; p < proc_table + NR_TASKS + NR_PROCS ; p++) {
 	    if (p -> ticks > largest_ticks) {
 		p_proc_ready = p;
 		largest_ticks = p -> ticks;
@@ -29,7 +29,7 @@ PUBLIC void schedule() {
 	    
         if (!largest_ticks) {
        	/* 全部为0, 那么重新赋值 */
-	    for (p = proc_table; p < proc_table + NR_TASKS; p++) {
+	    for (p = proc_table; p < proc_table + NR_TASKS + NR_PROCS; p++) {
 		p -> ticks = p -> priority;
 	    }
         }
