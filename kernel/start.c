@@ -2,6 +2,8 @@
 #include "const.h"
 #include "protect.h"
 #include "proc.h"
+#include "console.h"
+#include "tty.h"
 #include "proto.h"
 #include "global.h"
 

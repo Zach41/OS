@@ -3,6 +3,8 @@
 #include "const.h"
 #include "type.h"
 #include "protect.h"
+#include "console.h"
+#include "tty.h"
 #include "proto.h"
 #include "proc.h"
 #include "global.h"
@@ -19,3 +21,7 @@ PUBLIC TASK           task_table[NR_TASKS] = {{TestA, STACK_SIZE_TESTA, "TestA"}
 PUBLIC irq_handler    irq_table[NR_IRQ];
 
 PUBLIC system_call    sys_call_table[NR_SYS_CALL] = {sys_get_ticks};
+
+/* tty */
+PUBLIC TTY            tty_table[NR_CONSOLE];
+PUBLIC CONSOLE        console_table[NR_CONSOLE];

@@ -53,9 +53,6 @@
 /* 系统调用相关的变量 */
 #define NR_SYS_CALL    1
 
-/* 键盘相关变量 */
-#define KB_DATA       0x60
-
 /* 一些有用的定义 */
 /* Boolean */
 #define TRUE    1
@@ -71,5 +68,26 @@
 #define BRIGHT   0x08
 
 #define MAKE_COLOR(x, y) (x | y) /* (BG, FG) */
+
+#define DEFAULT_COLOR MAKE_COLOR(BLACK, WHITE)
+
+/* VGA寄存器 */
+#define CRTC_ADDR_REG    0x3D4	  /* CRT Controller Address Register */
+#define CRTC_DATA_REG    0x3D5	  /* CRT Controller Data Register */
+#define START_ADDR_H     0xC	  /* reg index of video mem start addr (HIGH) */
+#define START_ADDR_L     0xD	  /* reg index of video mem start addr (LOW) */
+#define CURSOR_H         0xE	  /* reg index of cursor location (HIGH) */
+#define CURSOR_L         0xF	  /* reg index of cursor location (LOW) */
+#define V_MEM_BASE       0xB8000  /* videmo mem base addr */
+#define V_MEM_SIZE       0x8000	  /* we have 32KB in total */
+
+/* 控制台个数 */
+#define NR_CONSOLE    3
+
+#define SCREEN_WIDTH  80
+#define SCREEN_SIZE   (80*25)
+
+#define SCR_DN        TRUE	/* 卷行的方向, down*/
+#define SCR_UP        FALSE	/* up */
 
 #endif

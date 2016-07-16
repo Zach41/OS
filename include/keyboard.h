@@ -6,6 +6,11 @@
 #define MAP_COLS       3
 #define NR_SCAN_CODES  0x80
 
+/* 键盘相关变量 */
+#define KB_DATA       0x60
+#define KB_CMD        0x64
+#define KB_ACK        0xFA
+#define LED_CODE      0xED
 
 #define FLAG_BREAK	0x0080		/* Break Code			*/
 #define FLAG_EXT	0x0100		/* Normal function keys		*/

@@ -53,11 +53,17 @@ PUBLIC int get_ticks();
 /* keyboard.c */
 PUBLIC void keyboard_handler(int);
 PUBLIC void init_keyboard();
-PUBLIC void keyboard_read();
+PUBLIC void keyboard_read(TTY*);
 
 /* tty.c */
 PUBLIC void task_tty();
-PUBLIC void inprocess(u32 key);
+PUBLIC void inprocess(TTY*, u32 key);
+
+/* console.c */
+PUBLIC int  is_current_console(CONSOLE*);
+PUBLIC void out_char(CONSOLE *p_console, char ch);
+PUBLIC void init_screen(TTY*);
+PUBLIC void select_console(int);
 
 #endif
 

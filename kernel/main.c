@@ -1,5 +1,7 @@
 #include "const.h"
 #include "type.h"
+#include "console.h"
+#include "tty.h"
 #include "proto.h"
 #include "protect.h"
 #include "proc.h"
@@ -105,7 +107,7 @@ PUBLIC int kernel_main() {
     }
     
     init_clock();
-    init_keyboard();
+    /* init_keyboard(); */
     
     k_reenter = 0;
 
