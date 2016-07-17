@@ -25,7 +25,7 @@ PUBLIC void schedule() {
     	    if (p -> ticks > largest_ticks) {
     		p_proc_ready = p;
     		largest_ticks = p -> ticks;
-    	    }
+	    }
 	}
         if (largest_ticks == 0) {
        	/* 全部为0, 那么重新赋值 */
@@ -33,6 +33,5 @@ PUBLIC void schedule() {
     		p -> ticks = p -> priority;
     	    }
         }
-	
     }
 }
