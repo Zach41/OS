@@ -4,8 +4,8 @@
 #include "protect.h"
 #include "console.h"
 #include "tty.h"
-#include "proto.h"
 #include "proc.h"
+#include "proto.h"
 #include "global.h"
 
 PUBLIC void clock_handler(int irq) {
@@ -17,7 +17,7 @@ PUBLIC void clock_handler(int irq) {
 	return;
     }
 
-    if (p_proc_ready -> ticks > 0) {
+    if (p_proc_ready->ticks > 0) {
 	return;			/* 知道ticks为0，才允许抢占 */
     }
     schedule();
@@ -29,6 +29,8 @@ PUBLIC void init_clock() {
     out_byte(TIMER0, (u8)(TIMER_FREQ / HZ));        /* 先写低位 */
     out_byte(TIMER0, (u8)((TIMER_FREQ / HZ) >> 8)); /* 再写高位 */
 
+    /* out_byte(TIMER0, (u8)(TIMER_FREQ / 2)); */
+    /* out_byte(TIMER0, (u8)((TIMER_FREQ / 2) >> 8)); */
     put_irq_handler(CLOCK_IRQ, clock_handler);
     enable_irq(CLOCK_IRQ);
 }

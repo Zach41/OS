@@ -1,5 +1,5 @@
-#ifndef _ZACH_PROTO_H
-#define _ZACH_PROTO_H
+#ifndef _ZACH_PROTO_H_
+#define _ZACH_PROTO_H_
 /* kliba.asm */
 PUBLIC void    out_byte(u16 port, u8 value);
 PUBLIC u8      in_byte(u16 port);
@@ -20,7 +20,8 @@ PUBLIC char*   itoa(char* str, int num);
 PUBLIC void    disp_int(int num);
 PUBLIC void    delay(int time);
 PUBLIC void    milli_delay(int milli_sec);
-
+PUBLIC int     strlen(char*);
+PUBLIC char*   itod(char*, int);
 /* i8259.c */
 PUBLIC void    init_8259A();
 PUBLIC void    spurious_irq(int irq);
@@ -49,6 +50,7 @@ PUBLIC void schedule();
 
 /* syscall.asm */
 PUBLIC int get_ticks();
+PUBLIC int write(char* buf, int len);
 
 /* keyboard.c */
 PUBLIC void keyboard_handler(int);
@@ -58,12 +60,18 @@ PUBLIC void keyboard_read(TTY*);
 /* tty.c */
 PUBLIC void task_tty();
 PUBLIC void inprocess(TTY*, u32 key);
+PUBLIC int  sys_write(char* buf, int len, PROCESS* p_proc);
 
 /* console.c */
 PUBLIC int  is_current_console(CONSOLE*);
 PUBLIC void out_char(CONSOLE *p_console, char ch);
 PUBLIC void init_screen(TTY*);
 PUBLIC void select_console(int);
+
+/* print.c */
+PUBLIC int printf(const char* fmt, ...);
+
+PUBLIC int vsprintf(char* buf, const char* fmt, va_list args);
 
 #endif
 

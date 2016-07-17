@@ -2,24 +2,17 @@
 #include "type.h"
 #include "console.h"
 #include "tty.h"
-#include "proto.h"
 #include "protect.h"
 #include "proc.h"
+#include "proto.h"
 #include "global.h"
 
 
 /* 操作系统第一个进程的代码 */
 void TestA() {
     while(1) {
-	/* disp_str("A"); */
-	/* disp_str(" "); */
-	/* disp_int(get_ticks()); */
-	/* delay(1); */
+	printf("<Ticks:%x>", get_ticks());
 	/* milli_delay(200); */
-
-	/* disp_color_str("A.", BRIGHT | MAKE_COLOR(BLACK, RED)); */
-	/* disp_int(get_ticks()); */
-	milli_delay(20);
     }
 }
 
@@ -27,28 +20,16 @@ void TestA() {
 void TestB() {
     int i=0;
     while(1) {
-	/* disp_str("B"); */
-	/* disp_str(" "); */
-	/* disp_int(i++); */
-	/* delay(1); */
+	printf("B");
 	/* milli_delay(200); */
-	/* disp_color_str("B.", BRIGHT | MAKE_COLOR(BLACK, RED)); */
-	/* disp_int(get_ticks()); */
-	milli_delay(20);
     }
 }
 
 void TestC() {
     int i=0;
     while (1) {
-	/* disp_str("C"); */
-	/* disp_str(" "); */
-	/* disp_int(i++); */
-	/* delay(1); */
+	printf("C");
 	/* milli_delay(200); */
-	/* disp_color_str("C.", BRIGHT | MAKE_COLOR(BLACK, RED)); */
-	/* disp_int(get_ticks()); */
-	milli_delay(20);
 
     }
 }
@@ -66,16 +47,7 @@ PUBLIC int kernel_main() {
     u8       privilege;
     u8       rpl;
     int      eflags;
-    
-    /* 测试代码 */
-    proc_table[0].priority = 20;
-    proc_table[0].ticks    = 20;
-    proc_table[1].priority = 20;
-    proc_table[1].ticks    = 20;
-    proc_table[2].priority = 20;
-    proc_table[2].ticks    = 20;
-    proc_table[3].priority = proc_table[3].ticks = 100;
-    
+        
     for (int i=0; i<NR_TASKS + NR_PROCS; i++) {
 	if (i < NR_TASKS) {
 	    /* 任务 */
@@ -92,7 +64,6 @@ PUBLIC int kernel_main() {
 	}
 	strcpy(p_proc -> p_name, p_task -> name);
 	p_proc -> pid = i;
-	
 	p_proc -> ldt_sel = selector_ldt;
 
 	memcpy(&p_proc -> ldts[0], &gdt[SELECTOR_KERNEL_CS >> 3], sizeof(DESCRIPTOR));
@@ -121,6 +92,18 @@ PUBLIC int kernel_main() {
 
 	selector_ldt += 8;
     }
+
+        /* 测试代码 */
+    proc_table[0].priority = 20;
+    proc_table[0].ticks    = 20;
+    proc_table[1].priority = 20;
+    proc_table[1].ticks    = 20;
+    proc_table[2].priority = 20;
+    proc_table[2].ticks    = 20;
+    proc_table[3].priority = proc_table[3].ticks = 20;
+    proc_table[1].nr_tty   = 0;
+    proc_table[2].nr_tty   = 1;
+    proc_table[3].nr_tty   = 1;
     
     init_clock();
     /* init_keyboard(); */

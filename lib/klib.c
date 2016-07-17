@@ -3,8 +3,8 @@
 #include "protect.h"
 #include "console.h"
 #include "tty.h"
-#include "proto.h"
 #include "proc.h"
+#include "proto.h"
 #include "global.h"
 
 PUBLIC char *itoa(char* str, int num) {
@@ -33,6 +33,26 @@ PUBLIC char *itoa(char* str, int num) {
     return str;
 }
 
+PUBLIC char* itod(char* str, int num) {
+    char *p = str;
+    int  cnt = 0;
+
+    while (num) {
+	*p++ = num % 10 + '0';
+	num /= 10;
+	cnt += 1;
+    }
+    *p++ = 0;
+    for (int i=1; i <= cnt/2; i++) {
+	char ch      = str[i-1];
+	str[i-1]     = str[cnt - i];
+	str[cnt - i] = ch;
+    }
+
+    return str;
+     
+}
+
 PUBLIC void disp_int(int num) {
     char input[16];
     itoa(input, num);
@@ -56,4 +76,16 @@ PUBLIC void milli_delay(int milli_sec) {
     while (((get_ticks() - ticks) * 1000 / HZ) < milli_sec) {
 	;
     }
+}
+
+PUBLIC int strlen(char* str) {
+    int cnt = 0;
+    char* p = str;
+    
+    while (*p) {
+	cnt++;
+	p++;
+    }
+
+    return cnt;
 }

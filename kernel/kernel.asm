@@ -291,9 +291,13 @@ hwint15:
 	;; 系统调用处理函数
 sys_call:	
 	call	save
+	push	dword [p_proc_ready]
 	sti
 
+	push 	ecx
+	push 	ebx
 	call	[sys_call_table + eax * 4]
+	add	esp, 4*3
 	mov	[esi + EAXREG - P_STACKBASE], eax ; 将系统调用返回值放入进程控制块的EAX寄存器，以便在进程恢复以后eax中装的是正确的返回值
 	cli
 	ret

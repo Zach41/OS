@@ -51,7 +51,7 @@
 #define AT_WINI_IRQ   14
 
 /* 系统调用相关的变量 */
-#define NR_SYS_CALL    1
+#define NR_SYS_CALL    2
 
 /* 一些有用的定义 */
 /* Boolean */

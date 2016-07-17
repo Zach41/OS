@@ -2,9 +2,9 @@
 #include "type.h"
 #include "console.h"
 #include "tty.h"
-#include "proto.h"
 #include "protect.h"
 #include "proc.h"
+#include "proto.h"
 #include "global.h"
 #include "keyboard.h"
 
@@ -12,9 +12,9 @@
 #define TTY_LAST     (tty_table + NR_CONSOLE)
 
 PRIVATE void init_tty(TTY*);
-
 PRIVATE void tty_do_read(TTY*);
 PRIVATE void tty_do_write(TTY*);
+PRIVATE void tty_write(TTY*, char* buf, int len);
 
 PRIVATE void put_key(TTY*, u32);
 
@@ -99,8 +99,15 @@ PUBLIC void inprocess(TTY *p_tty, u32 key) {
 	    break;
 	}
     }
+    /* printf("ABC%x", 156); */
+    /* char buf[256]; */
+    /* disp_str(itoa(buf, 123)); */
 }
 
+PUBLIC int sys_write(char* buf, int len, PROCESS *p) {
+    tty_write(&tty_table[p -> nr_tty], buf, len);
+    return 0;
+}
 PRIVATE void tty_do_read(TTY *p_tty) {
     if (is_current_console(p_tty -> p_console)) {
 	/* 如果是当前的控制台 */
@@ -137,5 +144,16 @@ PRIVATE void put_key(TTY* p_tty, u32 key) {
 	if (p_tty -> p_inbuf_head == p_tty -> in_buf + TTY_IN_BYTES) {
 	    p_tty -> p_inbuf_head = p_tty -> in_buf;
 	}
+    }
+}
+
+PRIVATE void tty_write(TTY* p_tty, char* buf, int len) {
+    char* p = buf;
+
+    int i = len;
+
+    while (i) {
+	out_char(p_tty -> p_console, *p++);
+	i--;
     }
 }

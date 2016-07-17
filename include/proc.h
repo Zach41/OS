@@ -35,6 +35,8 @@ typedef struct s_proc {
     
     u32            pid;			/* 进程ID */
     char           p_name[16];		/* 进程名 */
+
+    int            nr_tty;	        /* 进程对应的终端 */
 }PROCESS;
 
 /* 任务结构 */
