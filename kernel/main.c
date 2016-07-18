@@ -11,7 +11,7 @@
 /* 操作系统第一个进程的代码 */
 void TestA() {
     while(1) {
-	printf("<Ticks:%x>", get_ticks());
+	printl("<Ticks:%x>", get_ticks());
 	/* milli_delay(200); */
     }
 }
@@ -21,24 +21,22 @@ void TestB() {
     int i=0;
     while(1) {
 	printf("B");
-	/* milli_delay(200); */
+	milli_delay(200);
     }
 }
 
 void TestC() {
     int i=0;
+    assert(0);
     while (1) {
-	printf("C");
-	/* milli_delay(200); */
-
+	printl("C");
+	milli_delay(200);
     }
 }
 
 /* 内核的代码 */
 PUBLIC int kernel_main() {
-    int text_color = 0x74;
-
-    disp_color_str("--------Kernel Main Starts--------\n", text_color);
+    disp_str("--------Kernel Main Starts--------\n");
 
     TASK*    p_task;
     PROCESS* p_proc       = proc_table;
