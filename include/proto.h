@@ -10,6 +10,11 @@ PUBLIC void    disable_irq(int irq);
 PUBLIC void    disable_int();
 PUBLIC void    enable_int();
 
+/* misc.c */
+PUBLIC void assert_failure(char*, char*, char*, int);
+PUBLIC void spin(char*);
+PUBLIC void panic(const char*, ...);
+
 /* string.asm */
 PUBLIC void*   memcpy(void* pDst, void* pSrc, int iSize);
 PUBLIC void    memset(void* s, char c, int size);
@@ -43,14 +48,20 @@ PUBLIC void TestC();
 /* clock.c */
 PUBLIC void clock_handler(int);
 PUBLIC void init_clock();
+PUBLIC int  get_ticks();
 
 /* proc.c */
-PUBLIC int  sys_get_ticks();
 PUBLIC void schedule();
+PUBLIC void* va2la(int pid, void* va);
+PUBLIC int  ldt_seg_linear(PROCESS* p, int idx);
+PUBLIC int  sys_sendrec(int function, int src_dest, MESSAGE* m, PROCESS* p);
+PUBLIC int  send_recv(int function, int src_dest, MESSAGE *m);
+PUBLIC void reset_msg(MESSAGE*);
 
 /* syscall.asm */
-PUBLIC int get_ticks();
 PUBLIC int write(char* buf, int len);
+PUBLIC int sendrec(int function, int src_desc, MESSAGE* p_msg);
+PUBLIC int printx(char* str);
 
 /* keyboard.c */
 PUBLIC void keyboard_handler(int);
@@ -60,7 +71,8 @@ PUBLIC void keyboard_read(TTY*);
 /* tty.c */
 PUBLIC void task_tty();
 PUBLIC void inprocess(TTY*, u32 key);
-PUBLIC int  sys_write(char* buf, int len, PROCESS* p_proc);
+PUBLIC int  sys_write(int _unused, char* buf, int len, PROCESS* p_proc);
+PUBLIC int  sys_printx(int _unused1, int _unused2, char* s, PROCESS* p);
 
 /* console.c */
 PUBLIC int  is_current_console(CONSOLE*);
@@ -70,8 +82,12 @@ PUBLIC void select_console(int);
 
 /* print.c */
 PUBLIC int printf(const char* fmt, ...);
+PUBLIC int printl(const char* fmt, ...);
 
 PUBLIC int vsprintf(char* buf, const char* fmt, va_list args);
+
+/* systask.c */
+PUBLIC void task_sys();
 
 #endif
 

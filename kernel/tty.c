@@ -28,10 +28,8 @@ PUBLIC void task_tty() {
     for (p_tty=TTY_FIRST; p_tty < TTY_LAST; p_tty++) {
 	init_tty(p_tty);
     }
-
     /* 默认是0号控制台 */
     select_console(0);
-    
     while (TRUE) {
 	/* 不停地轮询tty */
 	for (p_tty = TTY_FIRST; p_tty < TTY_LAST; p_tty++) {
@@ -104,7 +102,7 @@ PUBLIC void inprocess(TTY *p_tty, u32 key) {
     /* disp_str(itoa(buf, 123)); */
 }
 
-PUBLIC int sys_write(char* buf, int len, PROCESS *p) {
+PUBLIC int sys_write(int _unused, char* buf, int len, PROCESS *p) {
     tty_write(&tty_table[p -> nr_tty], buf, len);
     return 0;
 }
@@ -156,4 +154,52 @@ PRIVATE void tty_write(TTY* p_tty, char* buf, int len) {
 	out_char(p_tty -> p_console, *p++);
 	i--;
     }
+}
+
+PUBLIC int sys_printx(int _unused1, int _unused2, char *s, PROCESS* p_proc) {
+    const char* p;
+    char ch;
+
+    char reenter_err[] = "? k_reenter is incorrect for unknown reason";
+    reenter_err[0]     = MAG_CH_PANIC;
+
+    if (k_reenter == 0) {
+	/* ring0~3调用的printx */
+	p = va2la(proc2pid(p_proc), s);
+    }
+    else if (k_reenter > 0) {
+	p = s;			/* ring0 调用printx */
+    } else {
+	p = reenter_err;
+    }
+
+    if (*p == MAG_CH_PANIC || (*p == MAG_CH_ASSERT && p_proc_ready < &proc_table[NR_TASKS])) {
+	/* 如果是在任务中assert失败 */
+	disable_int();
+
+	char *v = (char*)V_MEM_BASE;
+
+	const char *q = p + 1;	/* 跳过magic char */
+	while (v < (char*)(V_MEM_BASE + V_MEM_SIZE)) {
+	    *v++ = *q++;
+	    *v++ = MAKE_COLOR(BLACK, RED);
+
+	    if (!*q) {
+		while (((int)v - V_MEM_BASE) % (SCREEN_WIDTH * 16)) {
+		    v++;
+		    *v++ = MAKE_COLOR(BLACK, WHITE);
+		}
+		q = p+1;
+	    }
+	}
+	__asm__ __volatile__("hlt");
+    }
+
+    while ((ch = *p++) != 0) {
+	if (ch == MAG_CH_PANIC || ch == MAG_CH_ASSERT)
+	    continue;
+
+	out_char(tty_table[p_proc -> nr_tty].p_console, ch);
+    }
+    return 0;
 }

@@ -51,7 +51,7 @@
 #define AT_WINI_IRQ   14
 
 /* 系统调用相关的变量 */
-#define NR_SYS_CALL    2
+#define NR_SYS_CALL    3
 
 /* 一些有用的定义 */
 /* Boolean */
@@ -89,5 +89,41 @@
 
 #define SCR_DN        TRUE	/* 卷行的方向, down*/
 #define SCR_UP        FALSE	/* up */
+
+/* ASSERT */
+#define ASSERT
+#ifdef  ASSERT
+void assert_failure(char *exp, char *file, char *base_file, int line);
+#define assert(exp) if (exp) ; \
+    else assert_failure(#exp, __FILE__, __BASE_FILE__, __LINE__);
+#else
+#define assert(exp)
+#endif
+
+/* magic chars used by `printx' */
+#define MAG_CH_PANIC	'\002'
+#define MAG_CH_ASSERT	'\003'
+
+enum msgtype {
+    HARD_INT = 1,
+    GET_TICKS
+};
+
+/* IPC */
+#define SEND    1
+#define RECEIVE 2
+#define BOTH    3
+
+#define SENDING    0x02
+#define RECEIVING  0x04
+
+#define ANY        (NR_TASKS + NR_PROCS + 255)
+#define NO_TASK    (NR_TASKS + NR_PROCS + 511)
+#define INTERRUPT  -10
+
+#define RETVAL  u.m3.m3i1
+
+#define TASK_SYS   1
+   
 
 #endif

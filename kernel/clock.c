@@ -8,6 +8,15 @@
 #include "proto.h"
 #include "global.h"
 
+PUBLIC int get_ticks() {
+    MESSAGE msg;
+    reset_msg(&msg);
+
+    msg.type = GET_TICKS;
+    send_recv(BOTH, TASK_SYS, &msg);
+    return msg.RETVAL;
+}
+
 PUBLIC void clock_handler(int irq) {
     /* 时钟数加1 */
     ticks++;

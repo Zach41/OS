@@ -37,6 +37,20 @@ typedef struct s_proc {
     char           p_name[16];		/* 进程名 */
 
     int            nr_tty;	        /* 进程对应的终端 */
+
+    int            p_flags;	        /* 进程运行时，p_flags = 0 
+					   SENDING: in sending message
+					   RECEIVING: in receiving message
+					 */
+
+    MESSAGE        *p_msg;
+    int            p_recvfrom;	        /* want message from proc id */
+    int            p_sendto;            /* want message send to proc id */
+
+    int            has_int_msg;	        /* 中断发生时，如果任务还没有准备好取处理，那么这个值为非负 */
+
+    struct s_proc* q_sending;	        /* the queue of procs sending messages to this proc */
+    struct s_proc* next_sending;        /* next proc in the sending queue */
 }PROCESS;
 
 /* 任务结构 */
@@ -47,15 +61,17 @@ typedef struct s_task {
 }TASK;
 
 /* 任务的个数 */
-#define NR_TASKS            1
+#define NR_TASKS            2
 #define NR_PROCS            3
 
 #define STACK_SIZE_TESTA    0x8000
 #define STACK_SIZE_TESTB    STACK_SIZE_TESTA
 #define STACK_SIZE_TESTC    STACK_SIZE_TESTA
 #define STACK_SIZE_TTY      STACK_SIZE_TESTA
+#define STACK_SIZE_SYS      STACK_SIZE_TESTA
 #define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA + STACK_SIZE_TESTB + STACK_SIZE_TESTC + \
-			     STACK_SIZE_TTY)
+			     STACK_SIZE_TTY + STACK_SIZE_SYS)
 
+#define proc2pid(x)    (x - proc_table)
 
 #endif

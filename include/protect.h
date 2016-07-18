@@ -78,6 +78,9 @@ typedef struct s_tss {
 /* 每个任务的LDT表中表项的个数 */
 #define LDT_SIZE     2
 
+#define INDEX_LDT_C  0
+#define INDEX_LDT_RW 1
+
 /* 描述符类型 */
 #define DA_32        0x4000
 #define DA_LIMIT_4K  0x8000

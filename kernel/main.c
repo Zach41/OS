@@ -11,8 +11,8 @@
 /* 操作系统第一个进程的代码 */
 void TestA() {
     while(1) {
-	printf("<Ticks:%x>", get_ticks());
-	/* milli_delay(200); */
+	printl("<Ticks:%x>", get_ticks());
+	milli_delay(200);
     }
 }
 
@@ -21,24 +21,21 @@ void TestB() {
     int i=0;
     while(1) {
 	printf("B");
-	/* milli_delay(200); */
+	milli_delay(200);
     }
 }
 
 void TestC() {
     int i=0;
     while (1) {
-	printf("C");
-	/* milli_delay(200); */
-
+	printl("C");
+	milli_delay(200);
     }
 }
 
 /* 内核的代码 */
 PUBLIC int kernel_main() {
-    int text_color = 0x74;
-
-    disp_color_str("--------Kernel Main Starts--------\n", text_color);
+    disp_str("--------Kernel Main Starts--------\n");
 
     TASK*    p_task;
     PROCESS* p_proc       = proc_table;
@@ -47,6 +44,7 @@ PUBLIC int kernel_main() {
     u8       privilege;
     u8       rpl;
     int      eflags;
+    int      prio;
         
     for (int i=0; i<NR_TASKS + NR_PROCS; i++) {
 	if (i < NR_TASKS) {
@@ -55,12 +53,14 @@ PUBLIC int kernel_main() {
 	    privilege = PRIVILEGE_TASK;
 	    rpl       = RPL_TASK;
 	    eflags    = 0x1202;
+	    prio      = 15;
 	} else {
 	    /* 用户进程 */
 	    p_task    = user_proc_table + (i - NR_TASKS);
 	    privilege = PRIVILEGE_USER;
 	    rpl       = RPL_USER;
 	    eflags    = 0x202;
+	    prio      = 10;
 	}
 	strcpy(p_proc -> p_name, p_task -> name);
 	p_proc -> pid = i;
@@ -81,9 +81,20 @@ PUBLIC int kernel_main() {
 	/* 显存段的选择子是全局的，但是要修改任务的优先级 */
 	p_proc -> regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK) | rpl;
 
-	p_proc -> regs.eip    = (u32)p_task -> initial_eip;
-	p_proc -> regs.esp    = (u32)p_task_stack;
-	p_proc -> regs.eflags = eflags; 
+	p_proc -> regs.eip     = (u32)p_task -> initial_eip;
+	p_proc -> regs.esp     = (u32)p_task_stack;
+	p_proc -> regs.eflags  = eflags;
+	p_proc -> nr_tty       = 0;
+	p_proc -> p_flags      = 0;
+	p_proc -> p_msg        = 0;
+	p_proc -> p_sendto     = NO_TASK;
+	p_proc -> p_recvfrom   = NO_TASK;
+	p_proc -> has_int_msg  = 0;
+	p_proc -> q_sending    = 0;
+	p_proc -> next_sending = 0;
+
+	p_proc -> priority     = prio;
+	p_proc -> ticks        = prio;
 
 	/* 堆栈由高往地处生长 */
 	p_task_stack -= p_task -> stacksize;
@@ -94,16 +105,16 @@ PUBLIC int kernel_main() {
     }
 
         /* 测试代码 */
-    proc_table[0].priority = 20;
-    proc_table[0].ticks    = 20;
-    proc_table[1].priority = 20;
-    proc_table[1].ticks    = 20;
-    proc_table[2].priority = 20;
-    proc_table[2].ticks    = 20;
-    proc_table[3].priority = proc_table[3].ticks = 20;
-    proc_table[1].nr_tty   = 0;
-    proc_table[2].nr_tty   = 1;
-    proc_table[3].nr_tty   = 1;
+    /* proc_table[0].priority = 20; */
+    /* proc_table[0].ticks    = 20; */
+    /* proc_table[1].priority = 20; */
+    /* proc_table[1].ticks    = 20; */
+    /* proc_table[2].priority = 20; */
+    /* proc_table[2].ticks    = 20; */
+    /* proc_table[3].priority = proc_table[3].ticks = 20; */
+    proc_table[NR_TASKS + 0].nr_tty   = 0;
+    proc_table[NR_TASKS + 1].nr_tty   = 1;
+    proc_table[NR_TASKS + 2].nr_tty   = 1;
     
     init_clock();
     /* init_keyboard(); */

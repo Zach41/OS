@@ -20,7 +20,8 @@ ORANGESKERNEL   = kernel.bin
 OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/global.o lib/kliba.o lib/string.o lib/klib.o kernel/main.o \
 		kernel/clock.o kernel/syscall.o kernel/proc.o kernel/keyboard.o \
-		kernel/tty.o kernel/console.o kernel/printf.o
+		kernel/tty.o kernel/console.o kernel/printf.o lib/misc.o \
+		kernel/systask.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -94,6 +95,9 @@ kernel/console.o: kernel/console.c
 kernel/printf.o: kernel/printf.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+kernel/systask,o: kernel/systask.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 lib/kliba.o: lib/kliba.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
@@ -101,4 +105,7 @@ lib/string.o: lib/string.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
 lib/klib.o: lib/klib.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/misc.o: lib/misc.c
 	$(CC) $(CFLAGS) -o $@ $<

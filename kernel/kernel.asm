@@ -137,9 +137,14 @@ save:
 	push 	es
 	push 	fs
 	push 	gs
+
+	mov	esi, edx	; 保存edx，edx里保存了系统调用的参数
+	
 	mov	dx, ss
 	mov	ds, dx
 	mov 	es, dx
+
+	mov	edx, esi	; 恢复edx
 
 	mov 	esi, esp	; eax <- 进程控制块起始地址
 
@@ -294,10 +299,11 @@ sys_call:
 	push	dword [p_proc_ready]
 	sti
 
+	push 	edx
 	push 	ecx
 	push 	ebx
 	call	[sys_call_table + eax * 4]
-	add	esp, 4*3
+	add	esp, 4*4
 	mov	[esi + EAXREG - P_STACKBASE], eax ; 将系统调用返回值放入进程控制块的EAX寄存器，以便在进程恢复以后eax中装的是正确的返回值
 	cli
 	ret
