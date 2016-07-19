@@ -168,15 +168,6 @@ PRIVATE int msg_send(PROCESS* current, int dest, MESSAGE* m) {
 
 	/* 之前设置过了p_flags */
 	unblock(p_dest);
-
-	/* assert(p_dest -> p_flags == 0); */
-	/* assert(p_dest -> p_recvfrom == NO_TASK); */
-	/* assert(p_dest -> p_msg == 0); */
-	/* assert(p_dest -> p_sendto == NO_TASK); */
-	/* assert(p_sender -> p_flags == 0); */
-	/* assert(p_sender -> p_msg == 0); */
-	/* assert(p_sender -> p_recvfrom == NO_TASK); */
-	/* assert(p_sender -> p_sendto == NO_TASK); */
     } else {
 	p_sender -> p_flags |= SENDING;
 	assert(p_sender -> p_flags == SENDING);
@@ -197,11 +188,6 @@ PRIVATE int msg_send(PROCESS* current, int dest, MESSAGE* m) {
 	p_sender -> next_sending = 0;
 
 	block(p_sender);
-
-	/* assert(p_sender -> p_flags == SENDING); */
-	/* assert(p_sender -> p_msg != 0); */
-	/* assert(p_sender -> p_recvfrom = NO_TASK); */
-	/* assert(p_sender -> p_sendto == dest); */
     }
 
     return 0;
@@ -228,11 +214,6 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 
 	p_recv -> has_int_msg = 0;
 
-	assert(p_recv -> p_flags == 0);
-	assert(p_recv -> p_msg == 0);
-	assert(p_recv -> p_sendto == NO_TASK);
-	assert(p_recv -> has_int_msg == 0);
-
 	return 0;
     }
 
@@ -241,16 +222,6 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 	if (p_recv -> q_sending) {
 	    p_from = p_recv -> q_sending;
 	    copyok = 1;
-
-	    assert(p_recv -> p_flags == 0);
-	    assert(p_recv -> p_msg == 0);
-	    assert(p_recv -> p_recvfrom == NO_TASK);
-	    assert(p_recv -> p_sendto == NO_TASK);
-	    assert(p_recv -> q_sending != 0);
-	    assert(p_from -> p_msg != 0);
-	    assert(p_from -> p_recvfrom = NO_TASK);
-	    assert(p_from -> p_sendto == proc2pid(p_recv));
-	    assert(p_from -> p_flags == SENDING);
 	}
     } else  if (src >= 0 && src < NR_TASKS + NR_PROCS) {
 	/* 接受特定源 */
@@ -306,6 +277,7 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 }
 
 
+/* ring1~3进程调用 */
 PUBLIC int send_recv(int function, int src_dest, MESSAGE* msg) {
     int ret = 0;
     
