@@ -1,5 +1,8 @@
 #ifndef _ZACH_PROTO_H_
 #define _ZACH_PROTO_H_
+
+#include "hd.h"
+
 /* kliba.asm */
 PUBLIC void    out_byte(u16 port, u8 value);
 PUBLIC u8      in_byte(u16 port);
@@ -9,6 +12,8 @@ PUBLIC void    enable_irq(int irq);
 PUBLIC void    disable_irq(int irq);
 PUBLIC void    disable_int();
 PUBLIC void    enable_int();
+PUBLIC void    port_read(u16 port, void* buf, int n);
+PUBLIC void    port_write(u16 port, void* buf, int n);
 
 /* misc.c */
 PUBLIC void assert_failure(char*, char*, char*, int);
@@ -57,6 +62,7 @@ PUBLIC int  ldt_seg_linear(PROCESS* p, int idx);
 PUBLIC int  sys_sendrec(int function, int src_dest, MESSAGE* m, PROCESS* p);
 PUBLIC int  send_recv(int function, int src_dest, MESSAGE *m);
 PUBLIC void reset_msg(MESSAGE*);
+PUBLIC void inform_int(int task_nr);
 
 /* syscall.asm */
 PUBLIC int write(char* buf, int len);
@@ -89,5 +95,8 @@ PUBLIC int vsprintf(char* buf, const char* fmt, va_list args);
 /* systask.c */
 PUBLIC void task_sys();
 
+/* hd.c */
+PUBLIC void hd_handler();
+PUBLIC void task_hd();
 #endif
 

@@ -89,10 +89,29 @@
 %endmacro
 
 %macro	hwint_slave 	1
-	push 	%1
-	call	spurious_irq
-	add	esp, 4
-	hlt
+	call	save
+	in	al, 	INT_S_CTLMASK
+	or	al, 	(1 << (%1 - 8))
+	out	INT_S_CTLMASK, 	al ; 屏蔽当前中断
+
+	mov	al, EOI
+	out	INT_M_CTL, 	al ; Master和Slave都要置EOI
+	nop
+	out	INT_S_CTL,	al ; 告诉CPU中断已经完成
+
+	sti
+
+	push	%1
+	call	[irq_table + 4 * %1]
+	pop 	ecx
+
+	cli
+
+	in 	al, INT_S_CTLMASK
+	and 	al, ~(1 << (%1 - 8))
+	out 	INT_S_CTLMASK,	al
+
+	ret
 %endmacro
 	
 _start:

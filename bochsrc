@@ -12,3 +12,6 @@ log: bochsout.txt
 mouse: enabled=0
 
 keyboard: keymap=/usr/local/share/bochs/keymaps/x11-pc-us.map
+
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, path="c.img", mode=flat, cylinders=162, heads=16, spt=63

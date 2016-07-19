@@ -103,6 +103,26 @@ PUBLIC int sys_sendrec(int function, int src_dest, MESSAGE* m, PROCESS *p) {
     return 0;
 }
 
+/* 当中断完成后通知对应的任务 */
+PUBLIC void inform_int(int task_nr) {
+    PROCESS* p = proc_table + task_nr;
+
+    if (p -> p_flags & RECEIVING && (p -> p_recvfrom == ANY || p -> p_recvfrom == INTERRUPT)) {
+	/* 当进程已经在阻塞等到中断消息到来 */
+	p -> p_msg -> source = INTERRUPT;
+	p -> p_msg -> type   = HARD_INT;
+	p -> p_msg = 0;
+
+	p -> has_int_msg = 0;
+	p -> p_flags &= ~RECEIVING;
+	p -> p_recvfrom = NO_TASK;
+	assert(p -> p_flags == 0);
+	unblock(p);
+    } else {
+	/* 进程还没准备接收消息 */
+	p -> has_int_msg = 1;	/* 置为1，当进程准备接收消息的时候就会在msg_receive中被处理 */
+    }
+}
 /* 阻塞一个进程，必须在p_flags被置１后调用 */
 PRIVATE void block(PROCESS* p) {
     assert(p -> p_flags);

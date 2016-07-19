@@ -61,7 +61,7 @@ typedef struct s_task {
 }TASK;
 
 /* 任务的个数 */
-#define NR_TASKS            2
+#define NR_TASKS            3
 #define NR_PROCS            3
 
 #define STACK_SIZE_TESTA    0x8000
@@ -69,8 +69,9 @@ typedef struct s_task {
 #define STACK_SIZE_TESTC    STACK_SIZE_TESTA
 #define STACK_SIZE_TTY      STACK_SIZE_TESTA
 #define STACK_SIZE_SYS      STACK_SIZE_TESTA
+#define STACK_SIZE_HD       STACK_SIZE_TESTA
 #define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA + STACK_SIZE_TESTB + STACK_SIZE_TESTC + \
-			     STACK_SIZE_TTY + STACK_SIZE_SYS)
+			     STACK_SIZE_TTY + STACK_SIZE_SYS + STACK_SIZE_HD)
 
 #define proc2pid(x)    (x - proc_table)
 

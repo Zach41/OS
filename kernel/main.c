@@ -27,6 +27,12 @@ void TestB() {
 
 void TestC() {
     int i=0;
+    MESSAGE drive_msg;
+    drive_msg.type = DEV_OPEN;
+
+    send_recv(BOTH, TASK_HD, &drive_msg);
+
+    spin("Drive Message");
     while (1) {
 	printl("C");
 	milli_delay(200);
@@ -112,6 +118,7 @@ PUBLIC int kernel_main() {
     /* proc_table[2].priority = 20; */
     /* proc_table[2].ticks    = 20; */
     /* proc_table[3].priority = proc_table[3].ticks = 20; */
+    proc_table[TASK_HD].nr_tty        = 2;
     proc_table[NR_TASKS + 0].nr_tty   = 0;
     proc_table[NR_TASKS + 1].nr_tty   = 1;
     proc_table[NR_TASKS + 2].nr_tty   = 1;

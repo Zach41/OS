@@ -106,7 +106,10 @@ void assert_failure(char *exp, char *file, char *base_file, int line);
 
 enum msgtype {
     HARD_INT = 1,
-    GET_TICKS
+    GET_TICKS,
+
+    /* drivers' message type  */
+    DEV_OPEN = 1001
 };
 
 /* IPC */
@@ -123,7 +126,9 @@ enum msgtype {
 
 #define RETVAL  u.m3.m3i1
 
+#define TASK_TTY   0
 #define TASK_SYS   1
+#define TASK_HD    2
    
 
 #endif
