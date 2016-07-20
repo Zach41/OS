@@ -21,7 +21,7 @@ OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/global.o lib/kliba.o lib/string.o lib/klib.o kernel/main.o \
 		kernel/clock.o kernel/syscall.o kernel/proc.o kernel/keyboard.o \
 		kernel/tty.o kernel/console.o kernel/printf.o lib/misc.o \
-		kernel/systask.o kernel/hd.o
+		kernel/systask.o kernel/hd.o kernel/fs.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -99,6 +99,9 @@ kernel/systask,o: kernel/systask.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/hd.o: kernel/hd.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/fs.o: kernel/fs.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/kliba.o: lib/kliba.asm

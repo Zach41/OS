@@ -1,5 +1,7 @@
 #include "type.h"
 #include "const.h"
+#include "hd.h"
+#include "fs.h"
 #include "protect.h"
 #include "console.h"
 #include "tty.h"
@@ -108,6 +110,7 @@ PUBLIC void inform_int(int task_nr) {
     PROCESS* p = proc_table + task_nr;
 
     if (p -> p_flags & RECEIVING && (p -> p_recvfrom == ANY || p -> p_recvfrom == INTERRUPT)) {
+	printl("Unblock %s", p -> p_name);
 	/* 当进程已经在阻塞等到中断消息到来 */
 	p -> p_msg -> source = INTERRUPT;
 	p -> p_msg -> type   = HARD_INT;
@@ -120,6 +123,7 @@ PUBLIC void inform_int(int task_nr) {
 	unblock(p);
     } else {
 	/* 进程还没准备接收消息 */
+	printl("%s Not ready\n", p -> p_name);
 	p -> has_int_msg = 1;	/* 置为1，当进程准备接收消息的时候就会在msg_receive中被处理 */
     }
 }
@@ -195,14 +199,14 @@ PRIVATE int msg_send(PROCESS* current, int dest, MESSAGE* m) {
 	/* 之前设置过了p_flags */
 	unblock(p_dest);
 
-	/* assert(p_dest -> p_flags == 0); */
-	/* assert(p_dest -> p_recvfrom == NO_TASK); */
-	/* assert(p_dest -> p_msg == 0); */
-	/* assert(p_dest -> p_sendto == NO_TASK); */
-	/* assert(p_sender -> p_flags == 0); */
-	/* assert(p_sender -> p_msg == 0); */
-	/* assert(p_sender -> p_recvfrom == NO_TASK); */
-	/* assert(p_sender -> p_sendto == NO_TASK); */
+	assert(p_dest -> p_flags == 0);
+	assert(p_dest -> p_recvfrom == NO_TASK);
+	assert(p_dest -> p_msg == 0);
+	assert(p_dest -> p_sendto == NO_TASK);
+	assert(p_sender -> p_flags == 0);
+	assert(p_sender -> p_msg == 0);
+	assert(p_sender -> p_recvfrom == NO_TASK);
+	assert(p_sender -> p_sendto == NO_TASK);
     } else {
 	p_sender -> p_flags |= SENDING;
 	assert(p_sender -> p_flags == SENDING);
@@ -239,6 +243,7 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 
     if (p_recv -> has_int_msg && (src == ANY || src == INTERRUPT)) {
 	/* 如果有一个中断需要处理 */
+	printl("%s knows interrupt.\n", p_recv -> p_name);
 	MESSAGE msg;
 
 	reset_msg(&msg);
@@ -249,10 +254,10 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 
 	p_recv -> has_int_msg = 0;
 
-	/* assert(p_recv -> p_flags == 0); */
-	/* assert(p_recv -> p_msg == 0); */
-	/* assert(p_recv -> p_sendto == NO_TASK); */
-	/* assert(p_recv -> has_int_msg == 0); */
+	assert(p_recv -> p_flags == 0);
+	assert(p_recv -> p_msg == 0);
+	assert(p_recv -> p_sendto == NO_TASK);
+	assert(p_recv -> has_int_msg == 0);
 
 	return 0;
     }
@@ -263,14 +268,14 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 	    p_from = p_recv -> q_sending;
 	    copyok = 1;
 
-	    /* assert(p_recv -> p_flags == 0); */
-	    /* assert(p_recv -> p_msg == 0); */
-	    /* assert(p_recv -> p_recvfrom == NO_TASK); */
-	    /* assert(p_recv -> p_sendto == NO_TASK); */
-	    /* assert(p_recv -> q_sending != 0); */
-	    /* assert(p_from -> p_msg != 0); */
-	    /* assert(p_from -> p_recvfrom = NO_TASK); */
-	    /* assert(p_from -> p_sendto == proc2pid(p_recv)); */
+	    assert(p_recv -> p_flags == 0);
+	    assert(p_recv -> p_msg == 0);
+	    assert(p_recv -> p_recvfrom == NO_TASK);
+	    assert(p_recv -> p_sendto == NO_TASK);
+	    assert(p_recv -> q_sending != 0);
+	    assert(p_from -> p_msg != 0);
+	    assert(p_from -> p_recvfrom = NO_TASK);
+	    assert(p_from -> p_sendto == proc2pid(p_recv));
 	}
     } else  if (src >= 0 && src < NR_TASKS + NR_PROCS) {
 	/* 接受特定源 */

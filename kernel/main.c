@@ -1,5 +1,7 @@
 #include "const.h"
 #include "type.h"
+#include "hd.h"
+#include "fs.h"
 #include "console.h"
 #include "tty.h"
 #include "protect.h"
@@ -11,7 +13,7 @@
 /* 操作系统第一个进程的代码 */
 void TestA() {
     while(1) {
-	printl("<Ticks:%x>", get_ticks());
+	/* printl("<Ticks:%x>", get_ticks()); */
 	milli_delay(200);
     }
 }
@@ -27,12 +29,12 @@ void TestB() {
 
 void TestC() {
     int i=0;
-    MESSAGE drive_msg;
-    drive_msg.type = DEV_OPEN;
+    /* MESSAGE drive_msg; */
+    /* drive_msg.type = DEV_OPEN; */
 
-    send_recv(BOTH, TASK_HD, &drive_msg);
+    /* send_recv(BOTH, TASK_HD, &drive_msg); */
 
-    spin("Drive Message");
+    /* spin("Drive Message"); */
     while (1) {
 	printl("C");
 	milli_delay(200);
@@ -66,7 +68,7 @@ PUBLIC int kernel_main() {
 	    privilege = PRIVILEGE_USER;
 	    rpl       = RPL_USER;
 	    eflags    = 0x202;
-	    prio      = 10;
+	    prio      = 5;
 	}
 	strcpy(p_proc -> p_name, p_task -> name);
 	p_proc -> pid = i;

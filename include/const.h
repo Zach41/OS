@@ -109,8 +109,19 @@ enum msgtype {
     GET_TICKS,
 
     /* drivers' message type  */
-    DEV_OPEN = 1001
+    DEV_OPEN = 1001,
+    DEV_CLOSE,
+    DEV_READ,
+    DEV_WRITE,
+    DEV_IOCTL
 };
+
+#define	CNT		u.m3.m3i2
+#define	REQUEST		u.m3.m3i2
+#define	PROC_NR		u.m3.m3i3
+#define	DEVICE		u.m3.m3i4
+#define	POSITION	u.m3.m3l1
+#define	BUF		u.m3.m3p2
 
 /* IPC */
 #define SEND    1
@@ -126,9 +137,33 @@ enum msgtype {
 
 #define RETVAL  u.m3.m3i1
 
+#define INVALID_DRIVER -20
 #define TASK_TTY   0
 #define TASK_SYS   1
 #define TASK_HD    2
-   
+#define TASK_FS    3
+
+/* major device number */
+#define NO_DEV       0
+#define DEV_FLOPPY   1
+#define DEV_CDROM    2
+#define DEV_HD       3
+#define DEV_CHAR_TTY 4
+#define DEV_SCSI     5
+
+#define MAJOR_SHIFT    8
+#define MAKE_DEV(a, b) ((a << MAJOR_SHIFT) | b)
+
+#define MAJOR(x)       ((x >> MAJOR_SHIFT) & 0xFF)
+#define MINOR(x)       (x & 0xFF)
+
+#define MINOR_hd1a     0x10
+#define MINOR_hd2a     (MINOR_hd1a + NR_SUB_PER_PART)
+#define P_PRIMARY      0	/* 主分区 */
+#define P_EXTENDED     1	/* 扩展分区 */
+
+#define MINOR_BOOT     MINOR_hd2a
+
+#define ROOT_DEV       MAKE_DEV(DEV_HD, MINOR_BOOT)
 
 #endif

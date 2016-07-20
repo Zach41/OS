@@ -1,8 +1,6 @@
 #ifndef _ZACH_PROTO_H_
 #define _ZACH_PROTO_H_
 
-#include "hd.h"
-
 /* kliba.asm */
 PUBLIC void    out_byte(u16 port, u8 value);
 PUBLIC u8      in_byte(u16 port);
@@ -98,5 +96,8 @@ PUBLIC void task_sys();
 /* hd.c */
 PUBLIC void hd_handler();
 PUBLIC void task_hd();
+
+/* fs.c */
+PUBLIC void task_fs();
 #endif
 

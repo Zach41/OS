@@ -1,5 +1,7 @@
 #include "type.h"
 #include "const.h"
+#include "hd.h"
+#include "fs.h"
 #include "protect.h"
 #include "console.h"
 #include "tty.h"

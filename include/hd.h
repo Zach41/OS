@@ -39,6 +39,8 @@
 #define NR_SUB_PER_PART       16
 #define NR_SUB_PER_DRIVE      (NR_SUB_PER_PART * NR_PART_PER_DRIVE)
 #define NR_PRIM_PER_DRIVE     (NR_PART_PER_DRIVE + 1)
+#define MAX_PRIM              (MAX_DRIVES * NR_PRIM_PER_DRIVE - 1)
+#define MAX_SUBPARTITIONS     (NR_SUB_PER_DRIVE * MAX_DRIVES)
 
 /* hard disk command struct */
 typedef struct hd_cmd {
@@ -64,9 +66,32 @@ typedef struct hd_info {
     struct part_info    logical[NR_SUB_PER_DRIVE];
 }HD_INFO;
 
+typedef struct part_ent {
+    /* P339 table 9.3 */
+    u8 boot_ind;
+    u8 start_head;
+    u8 start_sector;
+    u8 start_cyl;
+    u8 sys_id;
+    u8 end_head;
+    u8 end_sector;
+    u8 end_cyl;
+    u32 start_sect;
+    u32 nr_sects;
+}PART_ENT;
+
 /* Definitions */
-#define HD_TIMEOUT    10000
-#define ATA_IDENTIFY  0xEC
+#define HD_TIMEOUT             10000
+#define ATA_IDENTIFY           0xEC
+#define ATA_READ               0x20
+#define ATA_WRITE              0x30
+#define PARTITION_TABLE_OFFSET 0x1BE
+
+/* Partition Type */
+#define ORANGES_PART 0x99
+#define NO_PART      0x00
+#define EXT_PART     0x05
+
 
 #define SECTOR_SIZE          512
 #define SECTOR_BITS          (SECTOR_SIZE * 8)
