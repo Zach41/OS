@@ -1,15 +1,16 @@
 #define GLOBAL_VARIABLES_HERE
 
-#include "const.h"
-#include "type.h"
-#include "hd.h"
-#include "fs.h"
-#include "protect.h"
-#include "console.h"
-#include "tty.h"
-#include "proc.h"
-#include "proto.h"
-#include "global.h"
+/* #include "const.h" */
+/* #include "type.h" */
+/* #include "hd.h" */
+/* #include "fs.h" */
+/* #include "protect.h" */
+/* #include "console.h" */
+/* #include "tty.h" */
+/* #include "proc.h" */
+/* #include "proto.h" */
+/* #include "global.h" */
+#include "headers.h"
 
 PUBLIC PROCESS        proc_table[NR_TASKS + NR_PROCS];
 
@@ -40,4 +41,8 @@ PUBLIC struct dev_drv_map dd_map[] = {
     {TASK_TTY},
     {INVALID_DRIVER}
 };
+
+/* 内存地址6MB~7MB为文件系统缓冲，一个文件最大为1MB */
+PUBLIC u8*          fsbuf      = (u8*)0x600000;
+PUBLIC const int    FSBUF_SIZE = 0x100000;
     

@@ -108,20 +108,47 @@ enum msgtype {
     HARD_INT = 1,
     GET_TICKS,
 
+    /* FS */
+    OPEN = 101,
+    CLOSE,
+    READ,
+    WRITE,
+    LSEEK,
+    STAT,
+    UNLINK,
+
     /* drivers' message type  */
     DEV_OPEN = 1001,
     DEV_CLOSE,
     DEV_READ,
     DEV_WRITE,
-    DEV_IOCTL
+    DEV_IOCTL,
+
+    /* ret */
+    SYSCALL_RET
 };
 
+/* HD Messages */
 #define	CNT		u.m3.m3i2
 #define	REQUEST		u.m3.m3i2
 #define	PROC_NR		u.m3.m3i3
 #define	DEVICE		u.m3.m3i4
 #define	POSITION	u.m3.m3l1
 #define	BUF		u.m3.m3p2
+
+/* FS messages */
+#define	FD		u.m3.m3i1
+#define	PATHNAME	u.m3.m3p1
+#define	FLAGS		u.m3.m3i1
+#define	NAME_LEN	u.m3.m3i2
+#define	CNT		u.m3.m3i2
+#define	REQUEST		u.m3.m3i2
+#define	PROC_NR		u.m3.m3i3
+#define	DEVICE		u.m3.m3i4
+#define	POSITION	u.m3.m3l1
+#define	BUF		u.m3.m3p2
+#define	OFFSET		u.m3.m3i2
+#define	WHENCE		u.m3.m3i3
 
 /* IPC */
 #define SEND    1
@@ -166,4 +193,13 @@ enum msgtype {
 
 #define ROOT_DEV       MAKE_DEV(DEV_HD, MINOR_BOOT)
 
+/* Min and Max */
+#define min(x, y) ((x) > (y) ? (y) : (x))
+#define max(x, y) ((x) > (y) ? (x) : (y))
+
+/* Process File Number */
+#define NR_FILES        64
+#define NR_FILE_DESC    64
+#define NR_INODE        64
+    
 #endif

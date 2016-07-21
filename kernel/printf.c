@@ -1,13 +1,14 @@
-#include "const.h"
-#include "type.h"
-#include "hd.h"
-#include "fs.h"
-#include "protect.h"
-#include "console.h"
-#include "tty.h"
-#include "proc.h"
-#include "proto.h"
-#include "global.h"
+/* #include "const.h" */
+/* #include "type.h" */
+/* #include "hd.h" */
+/* #include "fs.h" */
+/* #include "protect.h" */
+/* #include "console.h" */
+/* #include "tty.h" */
+/* #include "proc.h" */
+/* #include "proto.h" */
+/* #include "global.h" */
+#include "headers.h"
 
 PRIVATE char* i2a(int val, int base, char **ps) {
     /* 这里必须用双重指针 */
@@ -118,4 +119,10 @@ PUBLIC int printl(const char* fmt, ...) {
     printx(buf);
 
     return len;
+}
+
+PUBLIC int sprintf(char* buf, const char* fmt, ...) {
+    va_list args = (va_list)((char*)(&fmt) + 4);
+
+    return vsprintf(buf, fmt, args);
 }

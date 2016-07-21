@@ -1,13 +1,14 @@
-#include "const.h"
-#include "type.h"
-#include "hd.h"
-#include "fs.h"
-#include "console.h"
-#include "tty.h"
-#include "protect.h"
-#include "proc.h"
-#include "proto.h"
-#include "global.h"
+/* #include "const.h" */
+/* #include "type.h" */
+/* #include "hd.h" */
+/* #include "fs.h" */
+/* #include "console.h" */
+/* #include "tty.h" */
+/* #include "protect.h" */
+/* #include "proc.h" */
+/* #include "proto.h" */
+/* #include "global.h" */
+#include "headers.h"
 
 PRIVATE void set_cursor(u32 position);
 PRIVATE void flush(CONSOLE*);

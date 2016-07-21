@@ -1,13 +1,14 @@
-#include "const.h"
-#include "type.h"
-#include "hd.h"
-#include "fs.h"
-#include "console.h"
-#include "tty.h"
-#include "protect.h"
-#include "proc.h"
-#include "proto.h"
-#include "global.h"
+/* #include "const.h" */
+/* #include "type.h" */
+/* #include "hd.h" */
+/* #include "fs.h" */
+/* #include "console.h" */
+/* #include "tty.h" */
+/* #include "protect.h" */
+/* #include "proc.h" */
+/* #include "proto.h" */
+/* #include "global.h" */
+#include "headers.h"
 
 
 /* 操作系统第一个进程的代码 */

@@ -51,6 +51,8 @@ typedef struct s_proc {
 
     struct s_proc* q_sending;	        /* the queue of procs sending messages to this proc */
     struct s_proc* next_sending;        /* next proc in the sending queue */
+
+    FILE* filp[NR_FILES];
 }PROCESS;
 
 /* 任务结构 */

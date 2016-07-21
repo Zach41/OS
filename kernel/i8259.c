@@ -1,13 +1,14 @@
-#include "const.h"
-#include "type.h"
-#include "hd.h"
-#include "fs.h"
-#include "protect.h"
-#include "console.h"
-#include "tty.h"
-#include "proc.h"
-#include "proto.h"
-#include "global.h"
+/* #include "const.h" */
+/* #include "type.h" */
+/* #include "hd.h" */
+/* #include "fs.h" */
+/* #include "protect.h" */
+/* #include "console.h" */
+/* #include "tty.h" */
+/* #include "proc.h" */
+/* #include "proto.h" */
+/* #include "global.h" */
+#include "headers.h"
 
 PUBLIC void init_8259A() {
     out_byte(INT_M_CTL, 0x11);

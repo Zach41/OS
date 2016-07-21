@@ -1,19 +1,26 @@
-#include "const.h"
-#include "type.h"
-#include "hd.h"
-#include "fs.h"
-#include "protect.h"
-#include "console.h"
-#include "tty.h"
-#include "proc.h"
-#include "proto.h"
-#include "global.h"
+/* #include "const.h" */
+/* #include "type.h" */
+/* #include "hd.h" */
+/* #include "fs.h" */
+/* #include "protect.h" */
+/* #include "console.h" */
+/* #include "tty.h" */
+/* #include "proc.h" */
+/* #include "proto.h" */
+/* #include "global.h" */
+#include "headers.h"
 
 #define DRV_OF_DEV(dev) (dev <= MAX_PRIM ? \
 			 dev / NR_PRIM_PER_DRIVE : \
 			 (dev - MINOR_hd1a) / NR_SUB_PER_DRIVE)
 PRIVATE void init_hd();
+
+/* 硬盘驱动程序 */
 PRIVATE void hd_open(int device);
+PRIVATE void hd_close(int device);
+PRIVATE void hd_rdwt(MESSAGE*); /* 读写操作 */
+PRIVATE void hd_ioctl(MESSAGE*);
+
 PRIVATE void get_part_table(int drive, int sect_nr, PART_ENT* entry);
 PRIVATE void partition(int device, int style);
 PRIVATE void print_hdinfo(HD_INFO* hdi);
@@ -48,6 +55,16 @@ PUBLIC void task_hd() {
 	    /* 获得硬盘的信息 */
 	    /* hd_identify(0); */
 	    hd_open(msg.DEVICE);
+	    break;
+	case DEV_CLOSE:
+	    hd_close(msg.DEVICE);
+	    break;
+	case DEV_READ:
+	case DEV_WRITE:
+	    hd_rdwt(&msg);
+	    break;
+	case DEV_IOCTL:
+	    hd_ioctl(&msg);
 	    break;
 	default:
 	    panic("HD driver::unknown msg");
@@ -86,6 +103,69 @@ PRIVATE void hd_open(int device) {
 	/* 第一次打开硬盘 */
 	partition(drive * (NR_PART_PER_DRIVE + 1), P_PRIMARY);
 	print_hdinfo(&hd_info[drive]);
+    }
+}
+
+/* 关闭硬盘 */
+PRIVATE void hd_close(int device) {
+    int drive = DRV_OF_DEV(device);
+    assert(drive == 0);		/* 只有一块硬盘 */
+    hd_info[drive].open_cnt--;	/* 打开次数减一 */
+}
+
+PRIVATE void hd_rdwt(MESSAGE* p_msg) {
+    int drive = DRV_OF_DEV(p_msg -> DEVICE);
+    u64 pos = p_msg -> POSITION;
+
+    assert((pos & 0x1FF) == 0);	/* 只允许从扇区边界开始读 */
+
+    u32 sect_nr = (u32)(pos >> SECTOR_SIZE_SHIFT);
+    int logidx  = (p_msg -> DEVICE - MINOR_hd1a) % NR_SUB_PER_DRIVE;
+    sect_nr    += p_msg -> DEVICE < MAX_PRIM ? hd_info[drive].primary[p_msg -> DEVICE].base : hd_info[drive].logical[logidx].base;
+    
+    HD_CMD cmd;
+    cmd.features = 0;
+    cmd.count    = (p_msg -> CNT + SECTOR_SIZE - 1) / SECTOR_SIZE;
+    cmd.lba_low  = sect_nr & 0xFF;
+    cmd.lba_mid  = (sect_nr >> 8) & 0xFF;
+    cmd.lba_high = (sect_nr >> 16) & 0xFF;
+    cmd.device   = MAKE_DEVICE_REG(1, drive, (sect_nr >> 24) & 0xF);
+    cmd.command  = (p_msg -> type == DEV_READ) ? ATA_READ : ATA_WRITE;
+    hd_cmd_out(&cmd);
+
+    int bytes_left = p_msg -> CNT;
+    void* la = (void*)va2la(p_msg -> PROC_NR, p_msg -> BUF);
+
+    while (bytes_left > 0) {
+	int bytes = min(bytes_left, SECTOR_SIZE);
+	if (p_msg -> type == DEV_READ) {
+	    /* 一次中断一个扇区 */
+	    interrupt_wait();
+	    port_read(REG_DATA, hdbuf, SECTOR_SIZE);
+	    memcpy(la, (void*)va2la(TASK_HD, hdbuf), bytes);
+	} else {
+	    if (!waitfor(STATUS_DRQ, STATUS_DRQ, HD_TIMEOUT))
+		panic("HD writing error");
+	    port_write(REG_DATA, la, bytes);
+	    interrupt_wait();
+	}
+	la += bytes;
+	bytes_left -= bytes;
+    }
+}
+
+PRIVATE void hd_ioctl(MESSAGE* p_msg) {
+    int device = p_msg -> DEVICE;
+    int drive  = DRV_OF_DEV(device);
+
+    HD_INFO* hdi = &hd_info[drive];
+
+    if (p_msg -> REQUEST == DIOCTL_GET_GEO) {
+	void* dst = va2la(p_msg -> PROC_NR, p_msg -> BUF);
+	void* src = va2la(TASK_HD, device < MAX_PRIM ? &hdi->primary[drive] : &hdi->logical[(device - MINOR_hd1a) % NR_SUB_PER_DRIVE]);
+	memcpy(dst, src, sizeof(PART_ENT));
+    } else {
+	spin("HD No IO CTL");
     }
 }
 

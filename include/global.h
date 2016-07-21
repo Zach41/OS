@@ -21,6 +21,8 @@ EXTERN int        nr_current_console;
 /* 系统时钟数 */
 EXTERN int        ticks;
 
+EXTERN MESSAGE    fs_msg;
+
 extern PROCESS            proc_table[];	/* 进程表 */
 extern char               task_stack[];
 extern TASK               task_table[];
@@ -30,5 +32,6 @@ extern system_call        sys_call_table[];
 extern TTY                tty_table[];
 extern CONSOLE            console_table[];
 extern struct dev_drv_map dd_map[];
-
+extern u8*                fsbuf;
+extern const int          FSBUF_SIZE;
 

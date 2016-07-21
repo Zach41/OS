@@ -97,6 +97,8 @@ typedef struct part_ent {
 #define SECTOR_BITS          (SECTOR_SIZE * 8)
 #define SECTOR_SIZE_SHIFT    9
 
+#define DIOCTL_GET_GEO       1
+
 /* Macros */
 #define MAKE_DEVICE_REG(lba, drv, lba_highest) (((lba) << 6) | ((drv) << 4) | \
 						((lba_highest) | 0xA0))
