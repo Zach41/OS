@@ -110,7 +110,7 @@ PUBLIC void inform_int(int task_nr) {
     PROCESS* p = proc_table + task_nr;
 
     if (p -> p_flags & RECEIVING && (p -> p_recvfrom == ANY || p -> p_recvfrom == INTERRUPT)) {
-	printl("Unblock %s", p -> p_name);
+
 	/* 当进程已经在阻塞等到中断消息到来 */
 	p -> p_msg -> source = INTERRUPT;
 	p -> p_msg -> type   = HARD_INT;
@@ -123,7 +123,6 @@ PUBLIC void inform_int(int task_nr) {
 	unblock(p);
     } else {
 	/* 进程还没准备接收消息 */
-	printl("%s Not ready\n", p -> p_name);
 	p -> has_int_msg = 1;	/* 置为1，当进程准备接收消息的时候就会在msg_receive中被处理 */
     }
 }
@@ -243,7 +242,6 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 
     if (p_recv -> has_int_msg && (src == ANY || src == INTERRUPT)) {
 	/* 如果有一个中断需要处理 */
-	printl("%s knows interrupt.\n", p_recv -> p_name);
 	MESSAGE msg;
 
 	reset_msg(&msg);
@@ -261,7 +259,7 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 
 	return 0;
     }
-
+    
     if (src == ANY) {
 	/* 如果接收任意源 */
 	if (p_recv -> q_sending) {
@@ -277,7 +275,7 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 	    assert(p_from -> p_recvfrom = NO_TASK);
 	    assert(p_from -> p_sendto == proc2pid(p_recv));
 	}
-    } else  if (src >= 0 && src < NR_TASKS + NR_PROCS) {
+    } else if (src>=0 && src<NR_PROCS + NR_TASKS){
 	/* 接受特定源 */
 	p_from = &proc_table[src];
 
@@ -319,7 +317,9 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 	p_recv -> p_flags   |= RECEIVING;
 	if (src == ANY) {
 	    p_recv -> p_recvfrom = ANY;
-	} else {
+	} else if (src == INTERRUPT) {
+	    p_recv -> p_recvfrom = INTERRUPT;
+	} else{
 	    p_recv -> p_recvfrom = proc2pid(p_from);
 	}
 	p_recv -> p_msg      = m;

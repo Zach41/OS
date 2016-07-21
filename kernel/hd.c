@@ -30,7 +30,6 @@ PRIVATE HD_INFO hd_info[1];
 
 PUBLIC void hd_handler(int irq) {
     hd_status = in_byte(REG_STATUS);
-    printl("HD interrupt\n");
     inform_int(TASK_HD);
 }
 
@@ -104,9 +103,7 @@ PRIVATE void get_part_table(int drive, int sect_nr, PART_ENT* entry) {
 
     hd_cmd_out(&cmd);
     /* 等待中断发生 */
-    printl("Interrupt Wait\n");
     interrupt_wait();
-    printl("Interrupt Done\n");
     /* 数据已经就绪 */
     port_read(REG_DATA, hdbuf, SECTOR_SIZE);
     /* 分区表的偏移为PARTITION_TABLE_OFFSET = 0x1BE */
@@ -125,7 +122,6 @@ PRIVATE void partition(int device, int style) {
     if (style == P_PRIMARY) {
 	/* 如果是主分区 */
 	get_part_table(drive, drive, part_tbl);
-	printl("Table Read.\n");
 	int nr_prim_parts = 0;
 	for (int i=0; i<NR_PART_PER_DRIVE; i++) {
 	    if (part_tbl[i].sys_id == NO_PART) {
@@ -182,7 +178,7 @@ PRIVATE void print_hdinfo(HD_INFO *hdi) {
     for (int i=0; i<NR_SUB_PER_DRIVE; i++) {
 	if (hdi -> logical[i].size == 0)
 	    continue;
-	printl("         %d: base %d(0x%x), size: %d(0x%x) (in sector\n)",
+	printl("         %d: base %d(0x%x), size: %d(0x%x) (in sector)\n",
 	       i,
 	       hdi -> logical[i].base,
 	       hdi -> logical[i].base,

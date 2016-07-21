@@ -128,12 +128,12 @@ PRIVATE void scroll_screen(CONSOLE *p_con, int direction) {
     case SCR_DN:
 	if (p_con -> current_start_addr + SCREEN_SIZE <
 	    p_con -> original_addr + p_con -> v_mem_limit) {
-	    p_con -> current_start_addr += SCREEN_SIZE;
+	    p_con -> current_start_addr += SCREEN_WIDTH;
 	}
 	break;
     case SCR_UP:
 	if (p_con -> current_start_addr > p_con -> original_addr + SCREEN_SIZE)
-	    p_con -> current_start_addr -=  SCREEN_SIZE;
+	    p_con -> current_start_addr -=  SCREEN_WIDTH;
 	break;
     }
 }
