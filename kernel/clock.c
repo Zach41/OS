@@ -1,14 +1,4 @@
 /* 时钟中断处理函数 */
-/* #include "const.h" */
-/* #include "type.h" */
-/* #include "hd.h" */
-/* #include "fs.h" */
-/* #include "protect.h" */
-/* #include "console.h" */
-/* #include "tty.h" */
-/* #include "proc.h" */
-/* #include "proto.h" */
-/* #include "global.h" */
 #include "headers.h"
 
 PUBLIC int get_ticks() {

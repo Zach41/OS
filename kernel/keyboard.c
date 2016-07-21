@@ -1,13 +1,3 @@
-/* #include "const.h" */
-/* #include "type.h" */
-/* #include "hd.h" */
-/* #include "fs.h" */
-/* #include "console.h" */
-/* #include "tty.h" */
-/* #include "protect.h" */
-/* #include "proc.h" */
-/* #include "proto.h" */
-/* #include "global.h" */
 #include "headers.h"
 #include "keymap.h"
 

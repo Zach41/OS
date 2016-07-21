@@ -1,13 +1,3 @@
-/* #include "const.h" */
-/* #include "type.h" */
-/* #include "hd.h" */
-/* #include "fs.h" */
-/* #include "protect.h" */
-/* #include "proc.h" */
-/* #include "console.h" */
-/* #include "tty.h" */
-/* #include "proto.h" */
-/* #include "global.h" */
 #include "headers.h"
 
 /* PUBLIC void* memcpy(void* pDst, void* pSrc, int iSize); */

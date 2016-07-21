@@ -1,13 +1,3 @@
-/* #include "type.h" */
-/* #include "const.h" */
-/* #include "hd.h" */
-/* #include "fs.h" */
-/* #include "protect.h" */
-/* #include "console.h" */
-/* #include "tty.h" */
-/* #include "proc.h" */
-/* #include "proto.h" */
-/* #include "global.h" */
 #include "headers.h"
 
 PUBLIC void assert_failure(char *exp, char *file, char *base_file, int line) {
