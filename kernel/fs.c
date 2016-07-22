@@ -23,6 +23,10 @@ PUBLIC void task_fs() {
 	case CLOSE:
 	    fs_msg.RETVAL = do_close();
 	    break;
+	case READ:
+	case WRITE:
+	    fs_msg.CNT = do_rdwt();
+	    break;
 	}
 
 	fs_msg.type = SYSCALL_RET;
@@ -133,7 +137,7 @@ PRIVATE void init_fs() {
 
     read_super_block(ROOT_DEV);
     struct super_block* sb = get_super_block(ROOT_DEV);
-    printl("MAGIC: 0x%x", sb -> magic);
+    /* printl("MAGIC: 0x%x", sb -> magic); */
     assert(sb -> magic == MAGIC_V1);
 
     root_inode = get_inode(ROOT_DEV, ROOT_INODE);
@@ -297,7 +301,7 @@ PRIVATE void read_super_block(int dev) {
     super_block[i] = *sb;
     super_block[i].sb_dev = dev;
 
-    printl("NR_SECTS: %d, NR_IMAP_SECTS: %d, ROOT_INODE: %d\n", sb -> nr_sects,
-	    sb -> nr_imap_sects, sb -> root_inode);
+    /* printl("NR_SECTS: %d, NR_IMAP_SECTS: %d, ROOT_INODE: %d\n", sb -> nr_sects, */
+    /* 	    sb -> nr_imap_sects, sb -> root_inode); */
       
 }

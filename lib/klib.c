@@ -82,3 +82,11 @@ PUBLIC int strlen(const char* str) {
 
     return cnt;
 }
+
+PUBLIC void dump_inode(struct inode* p_inode) {
+    printl("Mode: %x\nSize: %d\nStart_Sect:%d\nNR_Sects:%d\n",
+	   p_inode -> i_mode,
+	   p_inode -> i_size,
+	   p_inode -> i_start_sect,
+	   p_inode -> i_nr_sects);
+}

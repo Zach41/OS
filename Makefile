@@ -22,7 +22,7 @@ OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/clock.o kernel/syscall.o kernel/proc.o kernel/keyboard.o \
 		kernel/tty.o kernel/console.o kernel/printf.o lib/misc.o \
 		kernel/systask.o kernel/hd.o kernel/fs.o kernel/keymap.o fslib/misc.o \
-		fslib/open.o
+		fslib/open.o fslib/read_write.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -112,6 +112,9 @@ fslib/misc.o: fslib/misc.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 fslib/open.o: fslib/open.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+fslib/read_write.o: fslib/read_write.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/kliba.o: lib/kliba.asm

@@ -3,12 +3,29 @@
 
 /* 操作系统第一个进程的代码 */
 void TestA() {
-    /* while(1) { */
-    /* 	/\* printl("<Ticks:%x>", get_ticks()); *\/ */
-    /* 	milli_delay(200); */
-    /* } */
-    int fd = open("/hello", O_CREAT);
+    char *filename = "hello";
+    const char bufw[] = "hello, file system";
+    const int rd_bytes = 11;
+    char  bufr[rd_bytes+1];
+
+    int fd = open(filename, O_CREAT | O_RDWR);
+    assert(fd != -1);
     printf("FD: %d\n", fd);
+
+    /* write */
+    int n = writef(fd, bufw, strlen(bufw));
+    assert(n == strlen(bufw));
+
+    close(fd);
+
+    fd = open(filename, O_RDWR);
+
+    /* read */
+    n = readf(fd, bufr, rd_bytes);
+    assert(n == rd_bytes);
+    bufr[n] = 0;
+    printf("%d bytes read. [%s]", n, bufr);
+    
     close(fd);
     spin("TestA");
 }
@@ -17,7 +34,7 @@ void TestA() {
 void TestB() {
     int i=0;
     while(1) {
-	printf("B");
+	/* printf("B"); */
 	milli_delay(200);
     }
 }
@@ -31,7 +48,7 @@ void TestC() {
 
     /* spin("Drive Message"); */
     while (1) {
-	printl("C");
+	/* printl("C"); */
 	milli_delay(200);
     }
 }
@@ -116,6 +133,7 @@ PUBLIC int kernel_main() {
     /* proc_table[2].ticks    = 20; */
     /* proc_table[3].priority = proc_table[3].ticks = 20; */
     proc_table[TASK_HD].nr_tty        = 2;
+    proc_table[TASK_FS].nr_tty        = 1;
     proc_table[NR_TASKS + 0].nr_tty   = 0;
     proc_table[NR_TASKS + 1].nr_tty   = 1;
     proc_table[NR_TASKS + 2].nr_tty   = 1;

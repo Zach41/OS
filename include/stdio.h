@@ -15,4 +15,8 @@ PUBLIC int open(const char* pathname, int flags);
 
 PUBLIC int close(int fd);
 
+PUBLIC int readf(int fd, void* buf, int count);
+
+PUBLIC int writef(int fd, const void* buf, int count);
+
 #endif
