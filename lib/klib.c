@@ -83,6 +83,20 @@ PUBLIC int strlen(const char* str) {
     return cnt;
 }
 
+PUBLIC int strcmp(const char* s1, const char* s2) {
+    const char* p1 = s1;
+    const char* p2 = s2;
+
+    while (*p1 && *p2) {
+	if (*p1++ != *p2++)
+	    return -1;
+    }
+    if (*p1 || *p2)
+	return -1;
+
+    return 0;
+}
+
 PUBLIC void dump_inode(struct inode* p_inode) {
     printl("Mode: %x\nSize: %d\nStart_Sect:%d\nNR_Sects:%d\n",
 	   p_inode -> i_mode,

@@ -3,30 +3,49 @@
 
 /* 操作系统第一个进程的代码 */
 void TestA() {
-    char *filename = "hello";
-    const char bufw[] = "hello, file system";
-    const int rd_bytes = 11;
-    char  bufr[rd_bytes+1];
+    /* char *filename = "hello"; */
+    /* const char bufw[] = "hello, file system"; */
+    /* const int rd_bytes = 11; */
+    /* char  bufr[rd_bytes+1]; */
 
-    int fd = open(filename, O_CREAT | O_RDWR);
-    assert(fd != -1);
-    printf("FD: %d\n", fd);
+    /* int fd = open(filename, O_CREAT | O_RDWR); */
+    /* assert(fd != -1); */
+    /* printf("FD: %d\n", fd); */
 
-    /* write */
-    int n = writef(fd, bufw, strlen(bufw));
-    assert(n == strlen(bufw));
+    /* /\* write *\/ */
+    /* int n = writef(fd, bufw, strlen(bufw)); */
+    /* assert(n == strlen(bufw)); */
 
-    close(fd);
+    /* close(fd); */
 
-    fd = open(filename, O_RDWR);
+    /* fd = open(filename, O_RDWR); */
 
-    /* read */
-    n = readf(fd, bufr, rd_bytes);
-    assert(n == rd_bytes);
-    bufr[n] = 0;
-    printf("%d bytes read. [%s]", n, bufr);
-    
-    close(fd);
+    /* /\* read *\/ */
+    /* n = readf(fd, bufr, rd_bytes); */
+    /* assert(n == rd_bytes); */
+    /* bufr[n] = 0; */
+    /* printf("%d bytes read. [%s]\n", n, bufr); */
+    /* close(fd); */
+
+    int fd;
+
+    /* 测试文件删除 */
+    char* files[] = {"/foo", "bar", "/bbb"};
+    for (int i=0; i<3; i++) {
+	fd = open(files[i], O_CREAT | O_RDWR);
+	printl("create file: %s, fd: %d\n", files[i], fd);
+	close(fd);
+    }
+
+    /* char* files_to_delete[] = {"/foo", "/bar", "dev_tty0"}; */
+
+    /* for (int i=0; i<3; i++) { */
+    /* 	if (unlink(files_to_delete[i]) == 0) { */
+    /* 	    printl("File %s deleted.\n", files_to_delete[i]); */
+    /* 	} else { */
+    /* 	    printl("Failed to delete file %s.\n", files_to_delete[i]); */
+    /* 	} */
+    /* } */
     spin("TestA");
 }
 
@@ -116,6 +135,9 @@ PUBLIC int kernel_main() {
 	p_proc -> priority     = prio;
 	p_proc -> ticks        = prio;
 
+	for (int j=0; j<NR_FILES; j++)
+	    p_proc -> filp[j] = 0;
+
 	/* 堆栈由高往地处生长 */
 	p_task_stack -= p_task -> stacksize;
 	p_proc++;
@@ -133,7 +155,7 @@ PUBLIC int kernel_main() {
     /* proc_table[2].ticks    = 20; */
     /* proc_table[3].priority = proc_table[3].ticks = 20; */
     proc_table[TASK_HD].nr_tty        = 2;
-    proc_table[TASK_FS].nr_tty        = 1;
+    proc_table[TASK_FS].nr_tty        = 0;
     proc_table[NR_TASKS + 0].nr_tty   = 0;
     proc_table[NR_TASKS + 1].nr_tty   = 1;
     proc_table[NR_TASKS + 2].nr_tty   = 1;

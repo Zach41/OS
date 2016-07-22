@@ -27,6 +27,11 @@ PUBLIC void task_fs() {
 	case WRITE:
 	    fs_msg.CNT = do_rdwt();
 	    break;
+	case UNLINK:
+	    fs_msg.RETVAL = do_unlink();
+	    break;
+	default:
+	    panic("FS:: unknown message.\n");
 	}
 
 	fs_msg.type = SYSCALL_RET;

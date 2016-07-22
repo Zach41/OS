@@ -32,6 +32,7 @@ PUBLIC void    milli_delay(int milli_sec);
 PUBLIC int     strlen(const char*);
 PUBLIC char*   itod(char*, int);
 PUBLIC void    dump_inode(struct inode*);
+PUBLIC int     strcmp(const char*, const char*);
 /* i8259.c */
 PUBLIC void    init_8259A();
 PUBLIC void    spurious_irq(int irq);
@@ -119,6 +120,9 @@ PUBLIC int search_file(char* path);
 
 /* fslib/read_write.c */
 PUBLIC int do_rdwt();
+
+/* fslib/link.c */
+PUBLIC int do_unlink();
 
 #endif
 
