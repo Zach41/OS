@@ -42,7 +42,7 @@ PUBLIC int memcmp(const void* s1, const void* s2, int n) {
     const char* p2 = (const char*)s2;
 
     for (int i=0; i<n; i++) {
-	if (*p1 != *p2)
+	if (*p1++ != *p2++)
 	    return 1;
     }
     return 0;

@@ -83,6 +83,24 @@ PUBLIC int strlen(const char* str) {
     return cnt;
 }
 
+PUBLIC int strcmp(const char* s1, const char* s2) {
+    const char* p1 = s1;
+    const char* p2 = s2;
+    printl("CMP s1: %s, s2: %s\n", s1, s2);
+    if (p1 == 0 || p2 == 0) {
+	return (p1 - p2);
+    }
+
+    while (*p1 && *p2) {
+	if (*p1 != *p2)
+	    return -1;
+	p1++;
+	p2++;
+    }
+
+    return (*p1 - *p2);
+}
+
 PUBLIC void dump_inode(struct inode* p_inode) {
     printl("Mode: %x\nSize: %d\nStart_Sect:%d\nNR_Sects:%d\n",
 	   p_inode -> i_mode,

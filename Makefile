@@ -10,7 +10,7 @@ LD		= ld
 ASMBFLAGS	= -I boot/include/
 # flags for compiling kernel file
 ASMKFLAGS	= -I include/ -f elf
-CFLAGS		= -I include -m32 -c -fno-builtin -fno-stack-protector
+CFLAGS		= -I include -m32 -c -fno-builtin -fno-stack-protector -std=c99
 LDFLAGS		= -m elf_i386 -s -Ttext $(ENTRYPOINT)
 #DASMFLAGS
 
@@ -22,7 +22,7 @@ OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/clock.o kernel/syscall.o kernel/proc.o kernel/keyboard.o \
 		kernel/tty.o kernel/console.o kernel/printf.o lib/misc.o \
 		kernel/systask.o kernel/hd.o kernel/fs.o kernel/keymap.o fslib/misc.o \
-		fslib/open.o fslib/read_write.o
+		fslib/open.o fslib/read_write.o fslib/link.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -44,7 +44,7 @@ buildimg:
 	dd if=boot/boot.bin of=a.img bs=512 count=1 conv=notrunc
 	sudo mount -o loop a.img /mnt/floppy/
 	sudo cp -fv boot/loader.bin /mnt/floppy/
-	sudo cp -fv kernel.bin /mnt/floppy/
+	sudo cp -fv kernel.bin /mnt/floppy/kernel.bin
 	sudo umount /mnt/floppy
 
 boot/boot.bin: boot/boot.asm boot/include/load.inc boot/include/fat12hdr.inc
@@ -115,6 +115,9 @@ fslib/open.o: fslib/open.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 fslib/read_write.o: fslib/read_write.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+fslib/link.o: fslib/link.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/kliba.o: lib/kliba.asm

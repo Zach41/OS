@@ -19,4 +19,6 @@ PUBLIC int readf(int fd, void* buf, int count);
 
 PUBLIC int writef(int fd, const void* buf, int count);
 
+PUBLIC int unlink(const char* pathname);
+
 #endif

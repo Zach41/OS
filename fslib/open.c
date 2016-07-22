@@ -52,6 +52,7 @@ PUBLIC int do_open() {
 	    break;
     }
     fd = i;
+    /* printl("PATHNAME: %s, NAME_LEN: %d, FD: %d\n", pathname, name_len, fd); */
     if (fd <0 || fd >= NR_FILES)
 	panic("file[] is full. PID: %d", proc2pid(pcaller));
 
@@ -63,16 +64,18 @@ PUBLIC int do_open() {
     if (i >= NR_FILE_DESC)
 	panic("f_desc_table[] is full. PID: %d", proc2pid(pcaller));
 
+    // FIXME: search_file is wrong
     int inode_nr = search_file(pathname);
-
+    
     struct inode* pin = 0;
     if (flags & O_CREAT) {
 	if (inode_nr) {
 	    /* file exists */
-	    printl("file exists");
+	    printl("file exists\n");
 	    return -1;
 	} else {
 	    pin = create_file(pathname, flags);
+	    /* dump_inode(pin); */
 	}
     } else {
 	assert(flags & O_RDWR);

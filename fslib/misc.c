@@ -37,7 +37,8 @@ PUBLIC int search_file(char* path) {
 	/* root dir */
 	return dir_inode -> i_num;
     }
-
+    /* printl("FILENAME: %s\n", filename); */
+    /* dump_inode(dir_inode); */
     int dir_blk0_nr = dir_inode -> i_start_sect;
     int nr_dir_blks = (dir_inode -> i_size + SECTOR_SIZE - 1) / SECTOR_SIZE;
     int nr_dir_entries = dir_inode -> i_size / DIR_ENTRY_SIZE; /* including unused slots */
