@@ -1,12 +1,16 @@
 #include "headers.h"
-
+#include "stdio.h"
 
 /* 操作系统第一个进程的代码 */
 void TestA() {
-    while(1) {
-	/* printl("<Ticks:%x>", get_ticks()); */
-	milli_delay(200);
-    }
+    /* while(1) { */
+    /* 	/\* printl("<Ticks:%x>", get_ticks()); *\/ */
+    /* 	milli_delay(200); */
+    /* } */
+    int fd = open("/hello", O_CREAT);
+    printf("FD: %d\n", fd);
+    close(fd);
+    spin("TestA");
 }
 
 /* 第二个进程的代码 */

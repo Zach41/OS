@@ -21,8 +21,6 @@ EXTERN int        nr_current_console;
 /* 系统时钟数 */
 EXTERN int        ticks;
 
-EXTERN MESSAGE    fs_msg;
-
 extern PROCESS            proc_table[];	/* 进程表 */
 extern char               task_stack[];
 extern TASK               task_table[];
@@ -31,6 +29,14 @@ extern irq_handler        irq_table[];
 extern system_call        sys_call_table[];
 extern TTY                tty_table[];
 extern CONSOLE            console_table[];
+
+/* FS */
+EXTERN MESSAGE            fs_msg;
+EXTERN FILE               f_desc_table[NR_FILE_DESC];
+EXTERN struct inode       inode_table[NR_INODE];
+EXTERN struct super_block super_block[NR_SUPER_BLOCK];
+EXTERN struct inode*      root_inode;
+EXTERN PROCESS*           pcaller;
 extern struct dev_drv_map dd_map[];
 extern u8*                fsbuf;
 extern const int          FSBUF_SIZE;

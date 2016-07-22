@@ -71,9 +71,9 @@ PUBLIC void milli_delay(int milli_sec) {
     }
 }
 
-PUBLIC int strlen(char* str) {
+PUBLIC int strlen(const char* str) {
     int cnt = 0;
-    char* p = str;
+    const char* p = str;
     
     while (*p) {
 	cnt++;

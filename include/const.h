@@ -201,5 +201,6 @@ enum msgtype {
 #define NR_FILES        64
 #define NR_FILE_DESC    64
 #define NR_INODE        64
+#define NR_SUPER_BLOCK  8
     
 #endif

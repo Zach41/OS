@@ -17,6 +17,7 @@ PUBLIC void    port_write(u16 port, void* buf, int n);
 PUBLIC void assert_failure(char*, char*, char*, int);
 PUBLIC void spin(char*);
 PUBLIC void panic(const char*, ...);
+PUBLIC int  memcmp(const void* s1, const void* s2, int len);
 
 /* string.asm */
 PUBLIC void*   memcpy(void* pDst, void* pSrc, int iSize);
@@ -28,7 +29,7 @@ PUBLIC char*   itoa(char* str, int num);
 PUBLIC void    disp_int(int num);
 PUBLIC void    delay(int time);
 PUBLIC void    milli_delay(int milli_sec);
-PUBLIC int     strlen(char*);
+PUBLIC int     strlen(const char*);
 PUBLIC char*   itod(char*, int);
 /* i8259.c */
 PUBLIC void    init_8259A();
@@ -106,8 +107,14 @@ PUBLIC struct inode* get_inode(int dev, int num);
 PUBLIC void   put_inode(struct inode* pinode);
 PUBLIC void   sync_inode(struct inode* pinode);
 
-/* open.c */
+/* fslib/open.c */
 /* PUBLIC int open(const char* pathname, int flags); */
 PUBLIC int do_open();
+PUBLIC int do_close();
+
+/* fslib/misc.c */
+PUBLIC int strip_path(char* filename, const char* pathname, struct inode** ppinode);
+PUBLIC int search_file(char* path);
+
 #endif
 
