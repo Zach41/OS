@@ -10,10 +10,17 @@ PUBLIC int do_unlink() {
     memcpy((void*)va2la(TASK_FS, pathname),
 	   (void*)va2la(src, fs_msg.PATHNAME),
 	   name_len);
+<<<<<<< HEAD
     pathname[name_len] = 0;
     printl("PATHNAME: %s\n NAME_LEN: %d\n", pathname, name_len);
 
     if (strcmp(pathname, "/") == 0) {
+=======
+
+    pathname[name_len] = 0;
+
+    if (strcmp(pathname, "/")) {
+>>>>>>> a34590f6da30b2d55db07b968e9212b6d7b31e93
 	printl("FS: do_unlink():: cannot unlink root directory\n");
 	return -1;
     }
@@ -151,6 +158,10 @@ PUBLIC int unlink(const char* pathname) {
     MESSAGE msg;
     msg.PATHNAME = (void*)pathname;
     msg.NAME_LEN = strlen(pathname);
+<<<<<<< HEAD
+    msg.type     = UNLINK;
+=======
+>>>>>>> a34590f6da30b2d55db07b968e9212b6d7b31e93
 
     send_recv(BOTH, TASK_FS, &msg);
 
