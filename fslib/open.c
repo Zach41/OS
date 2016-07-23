@@ -100,7 +100,15 @@ PUBLIC int do_open() {
 
 	if (imode == I_CHAR_SPECIAL) {
 	    /* tty */
-	    printl("tty\n");
+	    MESSAGE msg;
+	    msg.type = DEV_OPEN;
+
+	    int dev = pin -> i_start_sect;
+	    assert(MAJOR(dev) == 4);
+	    assert(dd_map[MAJOR(dev)].driver_nr != INVALID_DRIVER);
+
+	    msg.DEVICE = MINOR(dev);
+	    send_recv(BOTH, dd_map[MAJOR(dev)].driver_nr, &msg);
 	} else if (imode == I_DIRECTORY) {
 	    assert(pin -> i_num == ROOT_INODE);
 	} else {

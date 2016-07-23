@@ -11,6 +11,12 @@ typedef struct s_tty {
     u32*   p_inbuf_tail;	/* 指向要处理的位置 */
     int    inbuf_count;
 
+    int    tty_caller;		/* the process that sends messages to tty task (generally it's task FS)*/
+    int    tty_procnr;		/* the process that requests data */
+    int    tty_left_cnt;	/* number of bytes that process wants to read */
+    int    tty_trans_cnt;	/* number of bytes that has been transferred */
+    void*  tty_req_buf;		/* buffer that process reads */
+
     struct s_console    *p_console; /* 当前tty的console */
 }TTY;
 

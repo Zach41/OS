@@ -10,10 +10,10 @@ void TestA() {
 
     int fd = open(filename, O_CREAT | O_RDWR);
     assert(fd != -1);
-    printf("FD: %d\n", fd);
+    printl("FD: %d\n", fd);
 
     /* write */
-    int n = writef(fd, bufw, strlen(bufw));
+    int n = write(fd, bufw, strlen(bufw));
     assert(n == strlen(bufw));
 
     /* close(fd); */
@@ -22,23 +22,23 @@ void TestA() {
     /* fd = open(filename, O_RDWR); */
 
     /* read */
-    n = readf(fd, bufr, rd_bytes);
+    n = read(fd, bufr, rd_bytes);
     assert(n == rd_bytes);
     bufr[n] = 0;
-    printf("%d bytes read. [%s]\n", n, bufr);
+    printl("%d bytes read. [%s]\n", n, bufr);
     /* close(fd); */
 
     /* SEEK END */
     lseek(fd, 2, SEEK_END);
-    n = writef(fd, bufw, strlen(bufw));
+    n = write(fd, bufw, strlen(bufw));
     assert(n == strlen(bufw));
 
     /* SEEK_CUR */
     lseek(fd, -11, SEEK_CUR);
-    n = readf(fd, bufr, rd_bytes);
+    n = read(fd, bufr, rd_bytes);
     assert(n == rd_bytes);
     bufr[n] = 0;
-    printf("%d bytes read. [%s]\n", n, bufr);
+    printl("%d bytes read. [%s]\n", n, bufr);
 
     close(fd);
 
@@ -71,11 +71,31 @@ void TestA() {
 
 /* 第二个进程的代码 */
 void TestB() {
-    int i=0;
-    while(1) {
-	/* printf("B"); */
-	milli_delay(200);
+    char tty_name[] = "/dev_tty1";
+    int fd_stdin  = open(tty_name, O_RDWR);
+    assert(fd_stdin == 0);
+    int fd_stdout = open(tty_name, O_RDWR);
+    assert(fd_stdout == 1);
+
+    char rdbuf[128];
+
+    while (TRUE) {
+	write(fd_stdout, "$ ", 2);
+	int r = read(fd_stdin, rdbuf, 100);
+	rdbuf[r] = 0;
+
+	if (strcmp(rdbuf, "hello") == 0) {
+	    write(fd_stdout, "Hello Zach!\n", 12);
+	} else {
+	    if (rdbuf[0]) {
+		/* write(fd_stdout, rdbuf, r); */
+		/* write(fd_stdout, "\n", 1); */
+		printf("[%s]\n", rdbuf);
+	    }
+	}
     }
+
+    spin("TestB");
 }
 
 void TestC() {
@@ -119,7 +139,7 @@ PUBLIC int kernel_main() {
 	    privilege = PRIVILEGE_USER;
 	    rpl       = RPL_USER;
 	    eflags    = 0x202;
-	    prio      = 5;
+	    prio      = 15m;
 	}
 	strcpy(p_proc -> p_name, p_task -> name);
 	p_proc -> pid = i;

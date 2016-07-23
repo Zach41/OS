@@ -17,7 +17,7 @@ PUBLIC TASK           user_proc_table[NR_PROCS] = {{TestA, STACK_SIZE_TESTA, "Te
 
 PUBLIC irq_handler    irq_table[NR_IRQ];
 
-PUBLIC system_call    sys_call_table[NR_SYS_CALL] = {sys_write, sys_sendrec, sys_printx};
+PUBLIC system_call    sys_call_table[NR_SYS_CALL] = {sys_sendrec, sys_printx};
 
 /* tty */
 PUBLIC TTY            tty_table[NR_CONSOLE];

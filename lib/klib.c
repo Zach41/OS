@@ -86,7 +86,6 @@ PUBLIC int strlen(const char* str) {
 PUBLIC int strcmp(const char* s1, const char* s2) {
     const char* p1 = s1;
     const char* p2 = s2;
-    printl("CMP s1: %s, s2: %s\n", s1, s2);
     if (p1 == 0 || p2 == 0) {
 	return (p1 - p2);
     }

@@ -12,6 +12,9 @@ PUBLIC int get_ticks() {
 
 PUBLIC void clock_handler(int irq) {
     /* 时钟数加1 */
+    if (key_pressed) {
+	inform_int(TASK_TTY);
+    }
     ticks++;
     /* 当前进程的ticks减1 */
     p_proc_ready -> ticks--;

@@ -23,7 +23,24 @@ PUBLIC int do_rdwt() {
 
     if (imode == I_CHAR_SPECIAL) {
 	/* 字符串设备 */
-	printl("tty\n");
+	int type = fs_msg.type == READ ? DEV_READ : DEV_WRITE;
+	fs_msg.type = type;
+
+	int dev = pin -> i_start_sect;
+	assert(MAJOR(dev) == 4); /* 字符设备的驱动程序号是4 */
+
+	fs_msg.DEVICE  = MINOR(dev);
+	fs_msg.BUF     = buf;
+	fs_msg.CNT     = len;
+	fs_msg.PROC_NR = src;
+
+	assert(dd_map[MAJOR(dev)].driver_nr != INVALID_DRIVER);
+
+	send_recv(BOTH, dd_map[MAJOR(dev)].driver_nr, &fs_msg);
+	assert(fs_msg.CNT == len);
+
+	return fs_msg.CNT;
+	
     } else {
 	assert(pin -> i_mode == I_REGULAR || pin -> i_mode == I_DIRECTORY);
 	assert(fs_msg.type == READ || fs_msg.type == WRITE);
@@ -78,7 +95,7 @@ PUBLIC int do_rdwt() {
 }
 
 
-PUBLIC int readf(int fd, void* buf, int count) {
+PUBLIC int read(int fd, void* buf, int count) {
     MESSAGE msg;
 
     msg.type = READ;
@@ -91,7 +108,7 @@ PUBLIC int readf(int fd, void* buf, int count) {
     return msg.CNT;
 }
 
-PUBLIC int writef(int fd, const void* buf, int count) {
+PUBLIC int write(int fd, const void* buf, int count) {
     MESSAGE msg;
 
     msg.type = WRITE;

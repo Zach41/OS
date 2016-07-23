@@ -68,8 +68,8 @@ PUBLIC void init_screen(TTY* p_tty) {
 	p_tty -> p_console -> cursor = disp_pos / 2;
 	disp_pos = 0;
     } else {
-	out_char(p_tty -> p_console, nr_tty + '0');
-	out_char(p_tty -> p_console, '#');
+	/* out_char(p_tty -> p_console, nr_tty + '0'); */
+	/* out_char(p_tty -> p_console, '#'); */
     }
 
     set_cursor(p_tty -> p_console -> cursor);

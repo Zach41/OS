@@ -24,7 +24,9 @@ PRIVATE void set_leds();
 /* 键盘中断处理程序 */
 PUBLIC void keyboard_handler(int irq) {
     u8 scan_code = in_byte(KB_DATA);
-
+    /* 键盘被按下 */
+    key_pressed = 1;
+    
     if (kb_in.count < KB_IN_BYTES) {
 	*(kb_in.p_head) = scan_code;
 	kb_in.p_head++;

@@ -1,4 +1,5 @@
 #include "headers.h"
+#include "stdio.h"
 
 PRIVATE char* i2a(int val, int base, char **ps) {
     /* 这里必须用双重指针 */
@@ -95,9 +96,10 @@ int printf(const char* fmt, ...) {
     va_list args = (va_list)((char*)(&fmt) + 4);
     int len = vsprintf(buf, fmt, args);
     buf[len] = 0;
-    write(buf, len);
+    int cnt = write(FD_STDOUT, buf, len);
+    assert(cnt == len);
 
-    return len;
+    return cnt;
 }
 
 PUBLIC int printl(const char* fmt, ...) {

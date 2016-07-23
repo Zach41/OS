@@ -21,3 +21,8 @@ GRTAGS
 GTAGS
 
 *.orig
+
+
+kernel.bin.strip
+
+\.\#*

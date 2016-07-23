@@ -34,12 +34,15 @@ PUBLIC void task_fs() {
 	case LSEEK:
 	    fs_msg.RETVAL = do_lseek();
 	    break;
-	default:
-	    panic("FS:: unknown message.\n");
+	case RESUME_PROC:
+	    src = fs_msg.PROC_NR;
+	    break;
 	}
 
-	fs_msg.type = SYSCALL_RET;
-	send_recv(SEND, src, &fs_msg);
+	if (fs_msg.type != SUSPEND_PROC) {
+	    fs_msg.type = SYSCALL_RET;
+	    send_recv(SEND, src, &fs_msg);
+	}
     }
     spin("FS");
 }

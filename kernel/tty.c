@@ -5,16 +5,19 @@
 #define TTY_LAST     (tty_table + NR_CONSOLE)
 
 PRIVATE void init_tty(TTY*);
-PRIVATE void tty_do_read(TTY*);
-PRIVATE void tty_do_write(TTY*);
+PRIVATE void tty_do_read(TTY*, MESSAGE*);
+PRIVATE void tty_do_write(TTY*, MESSAGE*);
 PRIVATE void tty_write(TTY*, char* buf, int len);
+PRIVATE void tty_dev_write(TTY*);
+PRIVATE void tty_dev_read(TTY*);
+
 
 PRIVATE void put_key(TTY*, u32);
 
 /* 终端任务，负责读键盘，写屏幕等 */
 PUBLIC void task_tty() {
     TTY *p_tty;
-
+    MESSAGE msg;
     /* 初始化键盘 */
     init_keyboard();
 
@@ -26,8 +29,36 @@ PUBLIC void task_tty() {
     while (TRUE) {
 	/* 不停地轮询tty */
 	for (p_tty = TTY_FIRST; p_tty < TTY_LAST; p_tty++) {
-	    tty_do_read(p_tty);
-	    tty_do_write(p_tty);
+	    do {
+		tty_dev_read(p_tty);
+		tty_dev_write(p_tty);
+	    } while(p_tty -> inbuf_count);
+	}
+
+	send_recv(RECEIVE, ANY, &msg);
+
+	int src = msg.source;
+	assert(src != TASK_TTY);
+
+	TTY* p_tty = &tty_table[msg.DEVICE];
+
+	switch(msg.type) {
+	case DEV_OPEN:
+	    reset_msg(&msg);
+	    msg.type = SYSCALL_RET;
+	    send_recv(SEND, src, &msg);
+	    break;
+	case DEV_READ:
+	    tty_do_read(p_tty, &msg);
+	    break;
+	case DEV_WRITE:
+	    tty_do_write(p_tty, &msg);
+	    break;
+	case HARD_INT:
+	    key_pressed = 0;
+	    break;
+	default:
+	    panic("Unknown TTY Messsage.\n");
 	}
     }
 }
@@ -95,29 +126,41 @@ PUBLIC void inprocess(TTY *p_tty, u32 key) {
     /* disp_str(itoa(buf, 123)); */
 }
 
-PUBLIC int sys_write(int _unused, char* buf, int len, PROCESS *p) {
-    tty_write(&tty_table[p -> nr_tty], buf, len);
-    return 0;
-}
-PRIVATE void tty_do_read(TTY *p_tty) {
-    if (is_current_console(p_tty -> p_console)) {
-	/* 如果是当前的控制台 */
-	keyboard_read(p_tty);
-    }
+/* PUBLIC int sys_write(int _unused, char* buf, int len, PROCESS *p) { */
+/*     tty_write(&tty_table[p -> nr_tty], buf, len); */
+/*     return 0; */
+/* } */
+PRIVATE void tty_do_read(TTY *tty, MESSAGE* msg) {
+    tty -> tty_caller = msg -> source; /* 通常是FS发送的消息 */
+    tty -> tty_procnr = msg -> PROC_NR;
+    tty -> tty_left_cnt = msg -> CNT;
+    tty -> tty_trans_cnt = 0;
+    tty -> tty_req_buf = va2la(tty -> tty_procnr, msg -> BUF);
+
+    msg -> type = SUSPEND_PROC;
+
+    /* 立即返回 */
+    send_recv(SEND, tty -> tty_caller, msg);
+    
 }
 
-PRIVATE void tty_do_write(TTY *p_tty) {
-    if (p_tty -> inbuf_count) {
-	char ch = *(p_tty -> p_inbuf_tail);
-	p_tty -> p_inbuf_tail++;
+PRIVATE void tty_do_write(TTY *tty, MESSAGE* msg) {
+    char buf[2];
+    char* p = (char*)va2la(msg -> PROC_NR, msg -> BUF);
+    int left = msg -> CNT;
 
-	if (p_tty -> p_inbuf_tail == p_tty -> in_buf + TTY_IN_BYTES) {
-	    p_tty -> p_inbuf_tail = p_tty -> in_buf;
+    while (left) {
+	int bytes = min(2, left);
+	memcpy(va2la(TASK_TTY, buf),
+	       (void*)p, bytes);
+	for (int j=0; j<2; j++) {
+	    out_char(tty -> p_console, buf[j]);
 	}
-	p_tty -> inbuf_count--;
-
-	out_char(p_tty -> p_console, ch);
+	left -= bytes;
+	p    += bytes;
     }
+    msg -> type = SYSCALL_RET;
+    send_recv(SEND, msg -> source, msg);
 }
 
 PRIVATE void init_tty(TTY* p_tty) {
@@ -195,4 +238,49 @@ PUBLIC int sys_printx(int _unused1, int _unused2, char *s, PROCESS* p_proc) {
 	out_char(tty_table[p_proc -> nr_tty].p_console, ch);
     }
     return 0;
+}
+
+
+PRIVATE void tty_dev_write(TTY* tty) {
+    while (tty -> inbuf_count) {
+	char ch = *(tty -> p_inbuf_tail);
+	tty -> p_inbuf_tail++;
+	if (tty -> p_inbuf_tail == tty -> in_buf + TTY_IN_BYTES) {
+	    tty -> p_inbuf_tail = tty -> in_buf;
+	}
+	tty -> inbuf_count--;
+
+	if (tty -> tty_left_cnt) {
+	    if (ch >= ' ' && ch <= '~') {
+		/* 可以打印的字符传给进程 */
+		out_char(tty -> p_console, ch);
+		void* p = tty -> tty_req_buf + tty -> tty_trans_cnt;
+		memcpy(p, (void*)va2la(TASK_TTY, &ch), 1);
+		tty -> tty_left_cnt--;
+		tty -> tty_trans_cnt++;
+	    } else if (ch == '\b' && tty -> tty_trans_cnt) {
+		/* 如果是backspace，而且已经有输入 */
+		out_char(tty -> p_console, ch);
+		tty -> tty_trans_cnt--;
+		tty -> tty_left_cnt++;
+	    }
+
+	    if (ch == '\n' || tty -> tty_left_cnt == 0) {
+		/* 如果字符输入完毕或者遇到换行符 */
+		out_char(tty -> p_console, '\n');
+		MESSAGE msg;
+		msg.type = RESUME_PROC;
+		msg.PROC_NR = tty -> tty_procnr;
+		msg.CNT = tty -> tty_trans_cnt;
+		send_recv(SEND, tty -> tty_caller, &msg);
+		tty -> tty_left_cnt = 0;
+	    }
+	}
+    }
+}
+
+
+PRIVATE void tty_dev_read(TTY* tty) {
+    if (is_current_console(tty -> p_console))
+	keyboard_read(tty);
 }

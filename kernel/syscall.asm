@@ -1,8 +1,8 @@
 	%include	"sconst.inc"
 
-	_NR_write		equ 	0
-	_NR_sendrec		equ	1
-	_NR_printx		equ	2
+	;; _NR_write		equ 	0
+	_NR_sendrec		equ	0
+	_NR_printx		equ	1
 	INT_VECTOR_SYS_CALL	equ	0x90
 
 	;; global	get_ticks
@@ -18,12 +18,12 @@
 ;; 	int 	INT_VECTOR_SYS_CALL ; 调用中断
 ;; 	ret
 
-write:
-	mov 	eax, _NR_write
-	mov	ecx, [esp + 4]	; buf
-	mov 	edx, [esp + 8]	; len
-	int     INT_VECTOR_SYS_CALL
-	ret
+;; write:
+;; 	mov 	eax, _NR_write
+;; 	mov	ecx, [esp + 4]	; buf
+;; 	mov 	edx, [esp + 8]	; len
+;; 	int     INT_VECTOR_SYS_CALL
+;; 	ret
 
 sendrec:
 	mov	eax, _NR_sendrec

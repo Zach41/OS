@@ -51,7 +51,7 @@
 #define AT_WINI_IRQ   14
 
 /* 系统调用相关的变量 */
-#define NR_SYS_CALL    3
+#define NR_SYS_CALL    2
 
 /* 一些有用的定义 */
 /* Boolean */
@@ -107,6 +107,9 @@ void assert_failure(char *exp, char *file, char *base_file, int line);
 enum msgtype {
     HARD_INT = 1,
     GET_TICKS,
+
+    RESUME_PROC,
+    SUSPEND_PROC,
 
     /* FS */
     OPEN = 101,

@@ -66,7 +66,7 @@ PUBLIC void reset_msg(MESSAGE*);
 PUBLIC void inform_int(int task_nr);
 
 /* syscall.asm */
-PUBLIC int write(char* buf, int len);
+/* PUBLIC int write(char* buf, int len); */
 PUBLIC int sendrec(int function, int src_desc, MESSAGE* p_msg);
 PUBLIC int printx(char* str);
 
@@ -78,7 +78,7 @@ PUBLIC void keyboard_read(TTY*);
 /* tty.c */
 PUBLIC void task_tty();
 PUBLIC void inprocess(TTY*, u32 key);
-PUBLIC int  sys_write(int _unused, char* buf, int len, PROCESS* p_proc);
+/* PUBLIC int  sys_write(int _unused, char* buf, int len, PROCESS* p_proc); */
 PUBLIC int  sys_printx(int _unused1, int _unused2, char* s, PROCESS* p);
 
 /* console.c */
@@ -88,7 +88,7 @@ PUBLIC void init_screen(TTY*);
 PUBLIC void select_console(int);
 
 /* print.c */
-PUBLIC int printf(const char* fmt, ...);
+/* PUBLIC int printf(const char* fmt, ...); */
 PUBLIC int printl(const char* fmt, ...);
 PUBLIC int sprintf(char*, const char* fmt, ...);
 
