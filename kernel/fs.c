@@ -30,6 +30,10 @@ PUBLIC void task_fs() {
 	case UNLINK:
 	    fs_msg.RETVAL = do_unlink();
 	    break;
+
+	case LSEEK:
+	    fs_msg.RETVAL = do_lseek();
+	    break;
 	default:
 	    panic("FS:: unknown message.\n");
 	}

@@ -3,49 +3,69 @@
 
 /* 操作系统第一个进程的代码 */
 void TestA() {
-    /* char *filename = "hello"; */
-    /* const char bufw[] = "hello, file system"; */
-    /* const int rd_bytes = 11; */
-    /* char  bufr[rd_bytes+1]; */
+    char *filename = "hello";
+    const char bufw[] = "hello, file system";
+    const int rd_bytes = 11;
+    char  bufr[rd_bytes+1];
 
-    /* int fd = open(filename, O_CREAT | O_RDWR); */
-    /* assert(fd != -1); */
-    /* printf("FD: %d\n", fd); */
+    int fd = open(filename, O_CREAT | O_RDWR);
+    assert(fd != -1);
+    printf("FD: %d\n", fd);
 
-    /* /\* write *\/ */
-    /* int n = writef(fd, bufw, strlen(bufw)); */
-    /* assert(n == strlen(bufw)); */
+    /* write */
+    int n = writef(fd, bufw, strlen(bufw));
+    assert(n == strlen(bufw));
 
     /* close(fd); */
+    lseek(fd, 7, SEEK_SET);
 
     /* fd = open(filename, O_RDWR); */
 
-    /* /\* read *\/ */
-    /* n = readf(fd, bufr, rd_bytes); */
-    /* assert(n == rd_bytes); */
-    /* bufr[n] = 0; */
-    /* printf("%d bytes read. [%s]\n", n, bufr); */
+    /* read */
+    n = readf(fd, bufr, rd_bytes);
+    assert(n == rd_bytes);
+    bufr[n] = 0;
+    printf("%d bytes read. [%s]\n", n, bufr);
     /* close(fd); */
 
-    int fd;
+    /* SEEK END */
+    lseek(fd, 2, SEEK_END);
+    n = writef(fd, bufw, strlen(bufw));
+    assert(n == strlen(bufw));
 
-    /* 测试文件删除 */
-    char* files[] = {"/foo", "bar", "/bbb"};
-    for (int i=0; i<3; i++) {
-	fd = open(files[i], O_CREAT | O_RDWR);
-	/* printl("create file: %s, fd: %d\n", files[i], fd); */
-	close(fd);
-    }
+    /* SEEK_CUR */
+    lseek(fd, -11, SEEK_CUR);
+    n = readf(fd, bufr, rd_bytes);
+    assert(n == rd_bytes);
+    bufr[n] = 0;
+    printf("%d bytes read. [%s]\n", n, bufr);
 
-    char* files_to_delete[] = {"/foo", "/bar", "dev_tty0"};
+    close(fd);
 
-    for (int i=0; i<3; i++) {
-    	if (unlink(files_to_delete[i]) == 0) {
-    	    printl("File %s deleted.\n", files_to_delete[i]);
-    	} else {
-    	    printl("Failed to delete file %s.\n", files_to_delete[i]);
-    	}
-    }
+    
+
+    /* int fd; */
+
+    /* /\* 测试文件删除 *\/ */
+    /* char* files[] = {"/foo", "bar", "/bbb"}; */
+    /* for (int i=0; i<3; i++) { */
+    /* 	fd = open(files[i], O_CREAT | O_RDWR); */
+    /* 	/\* printl("create file: %s, fd: %d\n", files[i], fd); *\/ */
+    /* 	close(fd); */
+    /* } */
+
+    /* char* files_to_delete[] = {"/foo", "/bar", "dev_tty0"}; */
+
+    /* for (int i=0; i<3; i++) { */
+    /* 	if (unlink(files_to_delete[i]) == 0) { */
+    /* 	    printl("File %s deleted.\n", files_to_delete[i]); */
+    /* 	} else { */
+    /* 	    printl("Failed to delete file %s.\n", files_to_delete[i]); */
+    /* 	} */
+    /* } */
+    /* /\* 再写一个文件 *\/ */
+    /* fd = open("test", O_CREAT | O_RDWR); */
+    /* close(fd); */
     spin("TestA");
 }
 

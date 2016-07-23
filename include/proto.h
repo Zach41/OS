@@ -124,5 +124,8 @@ PUBLIC int do_rdwt();
 /* fslib/link.c */
 PUBLIC int do_unlink();
 
+/* fslib/lseek.c */
+PUBLIC int do_lseek();
+
 #endif
 

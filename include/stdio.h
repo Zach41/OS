@@ -11,6 +11,8 @@
 #define SEEK_CUR        2
 #define SEEK_END        3
 
+typedef int off_t;
+
 PUBLIC int open(const char* pathname, int flags);
 
 PUBLIC int close(int fd);
@@ -20,5 +22,7 @@ PUBLIC int readf(int fd, void* buf, int count);
 PUBLIC int writef(int fd, const void* buf, int count);
 
 PUBLIC int unlink(const char* pathname);
+
+PUBLIC int lseek(int fd, off_t offset, int whence);
 
 #endif

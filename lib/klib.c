@@ -102,7 +102,7 @@ PUBLIC int strcmp(const char* s1, const char* s2) {
 }
 
 PUBLIC void dump_inode(struct inode* p_inode) {
-    printl("Mode: %x\nSize: %d\nStart_Sect:%d\nNR_Sects:%d\n",
+    printl("Mode: %x\nSize: %d\nStart_Sect:%x\nNR_Sects:%d\n",
 	   p_inode -> i_mode,
 	   p_inode -> i_size,
 	   p_inode -> i_start_sect,
