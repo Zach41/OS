@@ -139,7 +139,7 @@ PUBLIC int kernel_main() {
 	    privilege = PRIVILEGE_USER;
 	    rpl       = RPL_USER;
 	    eflags    = 0x202;
-	    prio      = 15m;
+	    prio      = 15;
 	}
 	strcpy(p_proc -> p_name, p_task -> name);
 	p_proc -> pid = i;
