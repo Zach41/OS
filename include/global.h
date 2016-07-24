@@ -42,3 +42,6 @@ extern struct dev_drv_map dd_map[];
 extern u8*                fsbuf;
 extern const int          FSBUF_SIZE;
 
+/* MM */
+EXTERN MESSAGE            mm_msg;
+EXTERN int                memory_size;

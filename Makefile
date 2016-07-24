@@ -1,7 +1,7 @@
 # Makefile for OS
 
 # Entry point
-ENTRYPOINT	= 0x30400
+ENTRYPOINT	= 0x1000
 
 ASM		= nasm
 #DASM		= ndisasm
@@ -10,7 +10,7 @@ LD		= ld
 ASMBFLAGS	= -I boot/include/
 # flags for compiling kernel file
 ASMKFLAGS	= -I include/ -f elf
-CFLAGS		= -I include -m32 -c -fno-builtin -fno-stack-protector -std=c99
+CFLAGS		= -I include -m32 -c -fno-builtin -fno-stack-protector  -g
 LDFLAGS		= -m elf_i386 -s -Ttext $(ENTRYPOINT)
 #DASMFLAGS
 
@@ -22,7 +22,8 @@ OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/clock.o kernel/syscall.o kernel/proc.o kernel/keyboard.o \
 		kernel/tty.o kernel/console.o kernel/printf.o lib/misc.o \
 		kernel/systask.o kernel/hd.o kernel/fs.o kernel/keymap.o fslib/misc.o \
-		fslib/open.o fslib/read_write.o fslib/link.o fslib/lseek.o
+		fslib/open.o fslib/read_write.o fslib/link.o fslib/lseek.o kernel/mm.o \
+		lib/fork.o lib/getpid.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -43,8 +44,9 @@ realclean:
 buildimg:
 	dd if=boot/boot.bin of=a.img bs=512 count=1 conv=notrunc
 	sudo mount -o loop a.img /mnt/floppy/
+	strip kernel.bin -o kernel.bin.strip
 	sudo cp -fv boot/loader.bin /mnt/floppy/
-	sudo cp -fv kernel.bin /mnt/floppy/kernel.bin
+	sudo cp -fv kernel.bin.strip /mnt/floppy/kernel.bin
 	sudo umount /mnt/floppy
 
 boot/boot.bin: boot/boot.asm boot/include/load.inc boot/include/fat12hdr.inc
@@ -108,6 +110,9 @@ kernel/fs.o: kernel/fs.c
 kernel/keymap.o: kernel/keymap.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+kernel/mm.o: kernel/mm.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 fslib/misc.o: fslib/misc.c
 	$(CC) $(CFLAGS) -o $@ $<
 
@@ -132,5 +137,11 @@ lib/string.o: lib/string.asm
 lib/klib.o: lib/klib.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+lib/fork.o: lib/fork.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 lib/misc.o: lib/misc.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/getpid.o: lib/getpid.c
 	$(CC) $(CFLAGS) -o $@ $<

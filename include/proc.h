@@ -36,8 +36,6 @@ typedef struct s_proc {
     u32            pid;			/* 进程ID */
     char           p_name[16];		/* 进程名 */
 
-    int            nr_tty;	        /* 进程对应的终端 */
-
     int            p_flags;	        /* 进程运行时，p_flags = 0 
 					   SENDING: in sending message
 					   RECEIVING: in receiving message
@@ -52,6 +50,8 @@ typedef struct s_proc {
     struct s_proc* q_sending;	        /* the queue of procs sending messages to this proc */
     struct s_proc* next_sending;        /* next proc in the sending queue */
 
+    int p_parent;
+
     FILE* filp[NR_FILES];
 }PROCESS;
 
@@ -63,8 +63,9 @@ typedef struct s_task {
 }TASK;
 
 /* 任务的个数 */
-#define NR_TASKS            4
-#define NR_PROCS            3
+#define NR_TASKS            5
+#define NR_PROCS            32
+#define NR_NATIVE_PROCS     4
 
 #define STACK_SIZE_TESTA    0x8000
 #define STACK_SIZE_TESTB    STACK_SIZE_TESTA
@@ -73,8 +74,16 @@ typedef struct s_task {
 #define STACK_SIZE_SYS      STACK_SIZE_TESTA
 #define STACK_SIZE_HD       STACK_SIZE_TESTA
 #define STACK_SIZE_FS       STACK_SIZE_TESTA
+#define STACK_SIZE_INIT     STACK_SIZE_TESTA
+#define STACK_SIZE_MM       STACK_SIZE_TESTA
 #define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA + STACK_SIZE_TESTB + STACK_SIZE_TESTC + \
-			     STACK_SIZE_TTY + STACK_SIZE_SYS + STACK_SIZE_HD + STACK_SIZE_FS)
+			     STACK_SIZE_TTY + STACK_SIZE_SYS + STACK_SIZE_HD + STACK_SIZE_FS + \
+			     STACK_SIZE_INIT + STACK_SIZE_MM)
+
+
+#define PROCS_BASE              0xA00000
+#define PROC_IMAGE_SIZE_DEFAULT 0x100000
+#define PROC_ORIGIN_STACK       0x400
 
 #define proc2pid(x)    (x - proc_table)
 

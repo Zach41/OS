@@ -34,7 +34,7 @@ PUBLIC void task_hd() {
     MESSAGE msg;
 
     init_hd();
-
+    printl("Task HD begins.\n");
     while (TRUE) {
 	send_recv(RECEIVE, ANY, &msg);
 
@@ -92,7 +92,7 @@ PRIVATE void hd_open(int device) {
     if (hd_info[drive].open_cnt++ == 0) {
 	/* 第一次打开硬盘 */
 	partition(drive * (NR_PART_PER_DRIVE + 1), P_PRIMARY);
-	print_hdinfo(&hd_info[drive]);
+	/* print_hdinfo(&hd_info[drive]); */
     }
 }
 
@@ -270,7 +270,7 @@ PRIVATE void hd_identify(int drive) {
     /* 中断结束 */
     port_read(REG_DATA, hdbuf, SECTOR_SIZE);
 
-    print_identify_info((u16*)hdbuf);
+    /* print_identify_info((u16*)hdbuf); */
 
     u16* hdinfo = (u16*)hdbuf;
 

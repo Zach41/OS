@@ -30,4 +30,10 @@ PUBLIC int lseek(int fd, off_t offset, int whence);
 
 PUBLIC int printf(const char* fmt, ...);
 
+PUBLIC int fork();
+
+PUBLIC int getpid();
+
+PUBLIC int getppid();
+
 #endif

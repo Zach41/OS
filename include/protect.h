@@ -1,6 +1,9 @@
 #ifndef _ZACH_PROTECT_H_
 #define _ZACH_PROTECT_H_
 
+#define reassembly(high, high_shift, mid, mid_shift, low)    \
+    (((high) << (high_shift)) + ((mid) << (mid_shift)) + (low))
+
 /* 段描述符 */
 typedef struct s_descriptor {
     u16 limit_low;
@@ -80,6 +83,8 @@ typedef struct s_tss {
 
 #define INDEX_LDT_C  0
 #define INDEX_LDT_RW 1
+
+#define LIMIT_4K_SHIFT    12
 
 /* 描述符类型 */
 #define DA_32        0x4000

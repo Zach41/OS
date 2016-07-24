@@ -46,4 +46,8 @@ PUBLIC int memcmp(const void* s1, const void* s2, int n) {
 	    return 1;
     }
     return 0;
-} 
+}
+
+PUBLIC void dump_proc(PROCESS* p) {
+    printl("Name: %s\nPID:%d\nFLAGS:%x\n", p -> p_name, p -> pid, p -> p_flags);
+}

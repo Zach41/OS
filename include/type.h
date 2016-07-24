@@ -57,4 +57,9 @@ typedef struct {
     } u;
 }MESSAGE;
 
+typedef struct boot_params {
+    int            memsize;
+    unsigned char* kernel_file;
+}BOOT_PARAMS;
+
 #endif

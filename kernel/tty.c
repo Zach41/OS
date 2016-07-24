@@ -145,28 +145,29 @@ PRIVATE void tty_do_read(TTY *tty, MESSAGE* msg) {
 }
 
 PRIVATE void tty_do_write(TTY *tty, MESSAGE* msg) {
-    char buf[2];
+    char buf[1];
     char* p = (char*)va2la(msg -> PROC_NR, msg -> BUF);
     int left = msg -> CNT;
 
     while (left) {
-	int bytes = min(2, left);
-	memcpy(va2la(TASK_TTY, buf),
-	       (void*)p, bytes);
-	for (int j=0; j<2; j++) {
-	    out_char(tty -> p_console, buf[j]);
-	}
-	left -= bytes;
-	p    += bytes;
+	memcpy(va2la(TASK_TTY, buf), (void*)p, 1);
+	out_char(tty -> p_console, *buf);
+
+	left -= 1;
+	p    += 1;
     }
     msg -> type = SYSCALL_RET;
     send_recv(SEND, msg -> source, msg);
 }
 
 PRIVATE void init_tty(TTY* p_tty) {
-    p_tty -> inbuf_count = 0;
-    p_tty -> p_inbuf_head = p_tty -> p_inbuf_tail = p_tty -> in_buf;
-
+    p_tty -> inbuf_count   = 0;
+    p_tty -> p_inbuf_head  = p_tty -> p_inbuf_tail = p_tty -> in_buf;
+    p_tty -> tty_caller    = NO_TASK;
+    p_tty -> tty_procnr    = NO_TASK;
+    p_tty -> tty_left_cnt  = 0;
+    p_tty -> tty_trans_cnt = 0;
+    p_tty -> tty_req_buf   = 0;
     init_screen(p_tty);
 }
 
@@ -235,7 +236,7 @@ PUBLIC int sys_printx(int _unused1, int _unused2, char *s, PROCESS* p_proc) {
 	if (ch == MAG_CH_PANIC || ch == MAG_CH_ASSERT)
 	    continue;
 
-	out_char(tty_table[p_proc -> nr_tty].p_console, ch);
+	out_char(tty_table[0].p_console, ch);
     }
     return 0;
 }

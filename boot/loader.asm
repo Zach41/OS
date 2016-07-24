@@ -149,6 +149,17 @@ LABEL_GOON_LOADING_FILE:
 	add	ax, dx
 	add	ax, DeltaSectorNo
 	add	bx, [BPB_BytsPerSec]
+
+	jc	.1
+	jmp 	.2
+.1:
+	push	ax
+	mov 	ax, es
+	add 	ax, 1000h
+	mov 	es, ax
+	pop 	ax
+.2:
+	
 	jmp	LABEL_GOON_LOADING_FILE
 
 LABEL_FILE_LOADED:
@@ -307,10 +318,15 @@ LABEL_PM_START:
 
 	call	DispMemInfo
 	call 	SetupPaging
-	
-	;; mov	ah, 0Fh
-	;; mov	al, 'P'
-	;; mov	[gs:((80*0 + 39) * 2)], ax
+
+	;; BootParam[]
+	mov 	dword [BOOT_PARAM_ADDR], BOOT_PARAM_MAGIC
+	mov 	eax, [dwMemSize]
+	mov 	[BOOT_PARAM_ADDR + 4], eax
+	mov 	eax, BaseOfKernelFile
+	shl 	eax, 4
+	add 	eax, OffsetOfKernelFile
+	mov 	[BOOT_PARAM_ADDR + 8], eax ; kernel.bin在内存中的物理地址
 
 	call	InitKernel
 

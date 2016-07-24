@@ -1,6 +1,7 @@
 #ifndef _ZACH_HEADERS_H_
 #define _ZACH_HEADERS_H_
 
+#include "config.h"
 #include "const.h"
 #include "type.h"
 #include "hd.h"

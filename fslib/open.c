@@ -95,6 +95,7 @@ PUBLIC int do_open() {
 	f_desc_table[i].fd_mode  = flags;
 
 	f_desc_table[i].fd_pos   = 0;
+	f_desc_table[i].fd_cnt   = 1;
 
 	int imode = pin -> i_mode & I_TYPE_MASK;
 

@@ -77,6 +77,7 @@ typedef struct file_desc {
     int           fd_mode;		/* R or W */
     int           fd_pos;		/* current position */
     struct inode* fd_inode;	        /* pointer to inode */
+    int           fd_cnt;
 }FILE;
 
 #endif

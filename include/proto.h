@@ -18,6 +18,7 @@ PUBLIC void assert_failure(char*, char*, char*, int);
 PUBLIC void spin(char*);
 PUBLIC void panic(const char*, ...);
 PUBLIC int  memcmp(const void* s1, const void* s2, int len);
+PUBLIC void dump_proc(PROCESS* p);
 
 /* string.asm */
 PUBLIC void*   memcpy(void* pDst, void* pSrc, int iSize);
@@ -33,6 +34,8 @@ PUBLIC int     strlen(const char*);
 PUBLIC char*   itod(char*, int);
 PUBLIC void    dump_inode(struct inode*);
 PUBLIC int     strcmp(const char*, const char*);
+PUBLIC void    get_boot_params(BOOT_PARAMS*);
+PUBLIC int     get_kernel_map(unsigned int *base, unsigned int *limit);
 /* i8259.c */
 PUBLIC void    init_8259A();
 PUBLIC void    spurious_irq(int irq);
@@ -41,6 +44,7 @@ PUBLIC void    put_irq_handler(int irq, irq_handler handler);
 /* protect.c */
 PUBLIC void    init_prot();
 PUBLIC u32     seg2phys(u16 seg);
+PUBLIC void    init_descriptor(DESCRIPTOR* desc, u32 base, u32 limit, u16 attr);
 
 /* kernel.asm */
 PUBLIC void    restart();
@@ -50,6 +54,7 @@ PUBLIC void    sys_call();
 PUBLIC void TestA();
 PUBLIC void TestB();
 PUBLIC void TestC();
+PUBLIC void Init();
 
 /* clock.c */
 PUBLIC void clock_handler(int);
@@ -126,6 +131,15 @@ PUBLIC int do_unlink();
 
 /* fslib/lseek.c */
 PUBLIC int do_lseek();
+
+/* task_mm.c */
+PUBLIC void task_mm();
+
+/* fork.c */
+PUBLIC int do_fork();
+
+/* mm.c */
+PUBLIC int alloc_mem(int pid, int memsize);
 
 #endif
 

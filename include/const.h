@@ -111,6 +111,11 @@ enum msgtype {
     RESUME_PROC,
     SUSPEND_PROC,
 
+    /* Fork */
+    FORK,
+    GET_PID,
+    GET_PPID,
+
     /* FS */
     OPEN = 101,
     CLOSE,
@@ -153,6 +158,9 @@ enum msgtype {
 #define	OFFSET		u.m3.m3i2
 #define	WHENCE		u.m3.m3i3
 
+#define PID             u.m3.m3i2
+#define STATUS          u.m3.m3i1
+
 /* IPC */
 #define SEND    1
 #define RECEIVE 2
@@ -160,6 +168,9 @@ enum msgtype {
 
 #define SENDING    0x02
 #define RECEIVING  0x04
+#define WAITING    0x08
+#define HANGING    0x10
+#define FREE_SLOT  0x20
 
 #define ANY        (NR_TASKS + NR_PROCS + 255)
 #define NO_TASK    (NR_TASKS + NR_PROCS + 511)
@@ -172,6 +183,7 @@ enum msgtype {
 #define TASK_SYS   1
 #define TASK_HD    2
 #define TASK_FS    3
+#define TASK_MM    4
 
 /* major device number */
 #define NO_DEV       0

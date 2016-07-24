@@ -48,7 +48,7 @@ PRIVATE void init_idt_desc(unsigned char vector, u8 desc_type, int_handler handl
     p_gate -> offset_high = (base >> 16) & 0xFFFF;
 }
 
-PRIVATE void init_descriptor(DESCRIPTOR *p_desc, u32 base, u32 limit, u16 attribute) {
+PUBLIC void init_descriptor(DESCRIPTOR *p_desc, u32 base, u32 limit, u16 attribute) {
     p_desc -> limit_low        = limit & 0xFFFF;
     p_desc -> base_low         = base & 0xFFFF;
     p_desc -> base_mid         = (base >> 16) & 0xFF;
@@ -117,6 +117,9 @@ PUBLIC void init_prot() {
     PROCESS*    p_proc       = proc_table;
     u16         selector_ldt = SELECTOR_LDT_FIRST;
     for (int i=0; i<NR_TASKS + NR_PROCS; i++) {
+	memset(p_proc, 0, sizeof(PROCESS));
+
+	p_proc -> ldt_sel = SELECTOR_LDT_FIRST + (i << 3);
 	init_descriptor(&gdt[selector_ldt >> 3],
 			vir2phys(seg2phys(SELECTOR_KERNEL_DS), p_proc -> ldts),
 			LDT_SIZE * sizeof(DESCRIPTOR) - 1,

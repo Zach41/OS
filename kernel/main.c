@@ -1,71 +1,29 @@
 #include "headers.h"
 #include "stdio.h"
 
+void Init() {
+    char tty_name[] = "/dev_tty0";
+    int fd_stdin  = open(tty_name, O_RDWR);
+    assert(fd_stdin == 0);
+    int fd_stdout = open(tty_name, O_RDWR);
+    assert(fd_stdout == 1);
+    int pid = getpid();
+    printf("Init begins PID: %d\n", pid);
+    pid = fork();
+
+    if (pid) {
+	printf("parent is running, child pid:%d", pid);
+	spin("parent");
+    } else {
+	printf("child is running, parent pid:%d\n", getppid());
+	spin("child");
+    }
+
+    spin("Init Process");
+}
 /* 操作系统第一个进程的代码 */
 void TestA() {
-    char *filename = "hello";
-    const char bufw[] = "hello, file system";
-    const int rd_bytes = 11;
-    char  bufr[rd_bytes+1];
-
-    int fd = open(filename, O_CREAT | O_RDWR);
-    assert(fd != -1);
-    printl("FD: %d\n", fd);
-
-    /* write */
-    int n = write(fd, bufw, strlen(bufw));
-    assert(n == strlen(bufw));
-
-    /* close(fd); */
-    lseek(fd, 7, SEEK_SET);
-
-    /* fd = open(filename, O_RDWR); */
-
-    /* read */
-    n = read(fd, bufr, rd_bytes);
-    assert(n == rd_bytes);
-    bufr[n] = 0;
-    printl("%d bytes read. [%s]\n", n, bufr);
-    /* close(fd); */
-
-    /* SEEK END */
-    lseek(fd, 2, SEEK_END);
-    n = write(fd, bufw, strlen(bufw));
-    assert(n == strlen(bufw));
-
-    /* SEEK_CUR */
-    lseek(fd, -11, SEEK_CUR);
-    n = read(fd, bufr, rd_bytes);
-    assert(n == rd_bytes);
-    bufr[n] = 0;
-    printl("%d bytes read. [%s]\n", n, bufr);
-
-    close(fd);
-
     
-
-    /* int fd; */
-
-    /* /\* 测试文件删除 *\/ */
-    /* char* files[] = {"/foo", "bar", "/bbb"}; */
-    /* for (int i=0; i<3; i++) { */
-    /* 	fd = open(files[i], O_CREAT | O_RDWR); */
-    /* 	/\* printl("create file: %s, fd: %d\n", files[i], fd); *\/ */
-    /* 	close(fd); */
-    /* } */
-
-    /* char* files_to_delete[] = {"/foo", "/bar", "dev_tty0"}; */
-
-    /* for (int i=0; i<3; i++) { */
-    /* 	if (unlink(files_to_delete[i]) == 0) { */
-    /* 	    printl("File %s deleted.\n", files_to_delete[i]); */
-    /* 	} else { */
-    /* 	    printl("Failed to delete file %s.\n", files_to_delete[i]); */
-    /* 	} */
-    /* } */
-    /* /\* 再写一个文件 *\/ */
-    /* fd = open("test", O_CREAT | O_RDWR); */
-    /* close(fd); */
     spin("TestA");
 }
 
@@ -100,15 +58,9 @@ void TestB() {
 
 void TestC() {
     int i=0;
-    /* MESSAGE drive_msg; */
-    /* drive_msg.type = DEV_OPEN; */
-
-    /* send_recv(BOTH, TASK_HD, &drive_msg); */
-
-    /* spin("Drive Message"); */
     while (1) {
 	/* printl("C"); */
-	milli_delay(200);
+	/* milli_delay(200); */
     }
 }
 
@@ -119,13 +71,16 @@ PUBLIC int kernel_main() {
     TASK*    p_task;
     PROCESS* p_proc       = proc_table;
     char*    p_task_stack = task_stack + STACK_SIZE_TOTAL;
-    u16      selector_ldt = SELECTOR_LDT_FIRST;
     u8       privilege;
     u8       rpl;
     int      eflags;
     int      prio;
         
     for (int i=0; i<NR_TASKS + NR_PROCS; i++) {
+	if (i >= NR_TASKS + NR_NATIVE_PROCS) {
+	    p_proc -> p_flags = FREE_SLOT;
+	    continue;
+	}
 	if (i < NR_TASKS) {
 	    /* 任务 */
 	    p_task    = task_table + i;
@@ -141,14 +96,35 @@ PUBLIC int kernel_main() {
 	    eflags    = 0x202;
 	    prio      = 15;
 	}
+
 	strcpy(p_proc -> p_name, p_task -> name);
 	p_proc -> pid = i;
-	p_proc -> ldt_sel = selector_ldt;
+	p_proc -> p_parent = NO_TASK;
+	/* p_proc -> ldt_sel = selector_ldt; */
 
-	memcpy(&p_proc -> ldts[0], &gdt[SELECTOR_KERNEL_CS >> 3], sizeof(DESCRIPTOR));
-	memcpy(&p_proc -> ldts[1], &gdt[SELECTOR_KERNEL_DS >> 3], sizeof(DESCRIPTOR));
-	p_proc -> ldts[0].attr1 = DA_C | privilege << 5;
-	p_proc -> ldts[1].attr1 = DA_DRW | privilege << 5;
+	if (strcmp(p_task -> name, "INIT") != 0) {
+	    /* 不是Init进程 */
+	    memcpy(&p_proc -> ldts[0], &gdt[SELECTOR_KERNEL_CS >> 3], sizeof(DESCRIPTOR));
+	    memcpy(&p_proc -> ldts[1], &gdt[SELECTOR_KERNEL_DS >> 3], sizeof(DESCRIPTOR));
+	    p_proc -> ldts[0].attr1 = DA_C | privilege << 5;
+	    p_proc -> ldts[1].attr1 = DA_DRW | privilege << 5;
+	} else {
+	    /* Init 进程 */
+	    u32 k_base, k_limit;
+	    int ret = get_kernel_map(&k_base, &k_limit);
+	    assert(ret == 0);
+
+	    init_descriptor(&p_proc -> ldts[0],
+			    0,
+			    (k_base + k_limit) >> LIMIT_4K_SHIFT,
+			    DA_32 | DA_LIMIT_4K | DA_C | privilege << 5);
+	    init_descriptor(&p_proc -> ldts[1],
+			    0,
+			    (k_base + k_limit) >> LIMIT_4K_SHIFT,
+			    DA_32 | DA_LIMIT_4K | DA_DRW | privilege << 5);
+	    
+	}
+
 	/* 设置寄存器 */
 	// cs指向LDT的第一个表项
 	p_proc -> regs.cs = (0 & SA_RPL_MASK & SA_TI_MASK) | rpl | SA_TIL;
@@ -163,7 +139,6 @@ PUBLIC int kernel_main() {
 	p_proc -> regs.eip     = (u32)p_task -> initial_eip;
 	p_proc -> regs.esp     = (u32)p_task_stack;
 	p_proc -> regs.eflags  = eflags;
-	p_proc -> nr_tty       = 0;
 	p_proc -> p_flags      = 0;
 	p_proc -> p_msg        = 0;
 	p_proc -> p_sendto     = NO_TASK;
@@ -182,23 +157,7 @@ PUBLIC int kernel_main() {
 	p_task_stack -= p_task -> stacksize;
 	p_proc++;
 	p_task++;
-
-	selector_ldt += 8;
     }
-
-        /* 测试代码 */
-    /* proc_table[0].priority = 20; */
-    /* proc_table[0].ticks    = 20; */
-    /* proc_table[1].priority = 20; */
-    /* proc_table[1].ticks    = 20; */
-    /* proc_table[2].priority = 20; */
-    /* proc_table[2].ticks    = 20; */
-    /* proc_table[3].priority = proc_table[3].ticks = 20; */
-    proc_table[TASK_HD].nr_tty        = 2;
-    proc_table[TASK_FS].nr_tty        = 0;
-    proc_table[NR_TASKS + 0].nr_tty   = 0;
-    proc_table[NR_TASKS + 1].nr_tty   = 1;
-    proc_table[NR_TASKS + 2].nr_tty   = 1;
     
     init_clock();
     /* init_keyboard(); */

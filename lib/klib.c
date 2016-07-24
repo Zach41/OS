@@ -1,4 +1,5 @@
 #include "headers.h"
+#include "elf.h"
 
 PUBLIC char *itoa(char* str, int num) {
     char *p = str;
@@ -106,4 +107,48 @@ PUBLIC void dump_inode(struct inode* p_inode) {
 	   p_inode -> i_size,
 	   p_inode -> i_start_sect,
 	   p_inode -> i_nr_sects);
+}
+
+PUBLIC void get_boot_params(BOOT_PARAMS* p_bp) {
+    int* p = (int*)BOOT_PARAM_ADDR;
+
+    assert(p[BI_MAG] == BOOT_PARAM_MAGIC);
+
+    p_bp -> memsize = p[BI_MEM_SIZE];
+    p_bp -> kernel_file = (unsigned char*)(p[BI_KERNEL_FILE]);
+    assert(memcmp(p_bp -> kernel_file, ELFMAG, SELFMAG) == 0);
+}
+
+PUBLIC int get_kernel_map(unsigned int *base, unsigned int* limit) {
+    BOOT_PARAMS bp;
+    get_boot_params(&bp);
+
+    Elf32_Ehdr* e_header = (Elf32_Ehdr*)(bp.kernel_file);
+
+    if (memcmp(e_header -> e_ident, ELFMAG, SELFMAG) != 0)
+	return -1;
+
+    *base = ~0;
+    unsigned int l = 0;
+
+    for (int i=0; i<e_header -> e_shnum; i++) {
+	Elf32_Shdr* section_header = (Elf32_Shdr*)(bp.kernel_file
+						   + e_header -> e_shoff
+						   + i * e_header -> e_shentsize);
+	if (section_header -> sh_flags & SHF_ALLOC) {
+	    int bottom = section_header -> sh_addr;
+	    int top    = section_header -> sh_size + section_header -> sh_addr;
+
+	    if (*base > bottom)
+		*base = bottom;
+	    if (top > l)
+		l = top;
+	}
+	
+    }
+    assert(*base < l);
+
+    *limit = l - *base - 1;
+
+    return 0;
 }
