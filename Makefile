@@ -23,7 +23,7 @@ OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/tty.o kernel/console.o kernel/printf.o lib/misc.o \
 		kernel/systask.o kernel/hd.o kernel/fs.o kernel/keymap.o fslib/misc.o \
 		fslib/open.o fslib/read_write.o fslib/link.o fslib/lseek.o kernel/mm.o \
-		lib/fork.o lib/getpid.o
+		lib/fork.o lib/getpid.o lib/exit.o
 
 .PHONY: everything final image clean realclean all buildimg
 
@@ -144,4 +144,7 @@ lib/misc.o: lib/misc.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/getpid.o: lib/getpid.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/exit.o: lib/exit.c
 	$(CC) $(CFLAGS) -o $@ $<

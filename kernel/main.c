@@ -12,10 +12,15 @@ void Init() {
     pid = fork();
 
     if (pid) {
-	printf("parent is running, child pid:%d", pid);
+	printf("parent is running, child pid:%d\n", pid);
+	int status;
+	int child = wait(&status);
+	printf("child %d exited with status: %d\n", child, status);
 	spin("parent");
-    } else {
+    } else {	
 	printf("child is running, parent pid:%d\n", getppid());
+
+	exit(111);
 	spin("child");
     }
 

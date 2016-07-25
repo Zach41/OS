@@ -36,4 +36,8 @@ PUBLIC int getpid();
 
 PUBLIC int getppid();
 
+PUBLIC int wait(int* status);
+
+PUBLIC void exit();
+
 #endif

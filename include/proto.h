@@ -140,6 +140,11 @@ PUBLIC int do_fork();
 
 /* mm.c */
 PUBLIC int alloc_mem(int pid, int memsize);
+PUBLIC int free_mem(int pid);
+
+/* exit.c */
+PUBLIC void do_exit(int status);
+PUBLIC void do_wait();
 
 #endif
 

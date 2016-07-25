@@ -4,6 +4,7 @@ PRIVATE void init_fs();
 PRIVATE void mkfs();
 PRIVATE void read_super_block(int dev);
 PRIVATE int  fs_fork();
+PRIVATE int  fs_exit();
 
 /* 文件系统进程 */
 PUBLIC void task_fs() {
@@ -39,6 +40,9 @@ PUBLIC void task_fs() {
 	    break;
 	case FORK:
 	    fs_msg.RETVAL = fs_fork();
+	    break;
+	case EXIT:
+	    fs_msg.RETVAL = fs_exit();
 	    break;
 	}
 
@@ -330,5 +334,24 @@ PRIVATE int fs_fork() {
 	}
     }
 
+    return 0;
+}
+
+PRIVATE int fs_exit() {
+    /* 进程退出 */
+    PROCESS* p = &proc_table[fs_msg.PID];
+    for (int i=0; i<NR_FILES; i++) {
+	if (p -> filp[i]) {
+	    /* inode索引减一 */
+	    p -> filp[i] -> fd_inode -> i_cnt--;
+
+	    p -> filp[i] -> fd_cnt--;
+	    if (p -> filp[i] -> fd_cnt == 0) {
+		/* 如果没有进程引用这个文件描述符 */
+		p -> filp[i] -> fd_inode = 0;
+	    }
+	    p -> filp[i] = 0;
+	}
+    }
     return 0;
 }

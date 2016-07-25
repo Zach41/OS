@@ -15,7 +15,6 @@ PUBLIC int getppid() {
     MESSAGE msg;
 
     msg.type = GET_PPID;
-    printf("TYPE: %d\n", msg.type);
     send_recv(BOTH, TASK_SYS, &msg);
     assert(msg.type == SYSCALL_RET);
 

@@ -16,6 +16,15 @@ PUBLIC void task_mm() {
 	case FORK:
 	    mm_msg.RETVAL = do_fork();
 	    break;
+	case EXIT:
+	    /* printl("PROCESS %d wants to exit\n", mm_msg.source); */
+	    do_exit(mm_msg.STATUS);
+	    reply = 0;		/* 不需要再发送消息给退出的进程 */
+	    break;
+	case WAIT:
+	    do_wait();
+	    reply = 0;		/* 不需要返回，有子进程退出时，会在`cleanup`中发一个消息给父进程 */
+	    break;
 	default:
 	    panic("Unknown message in MM.");
 	    break;
@@ -43,6 +52,7 @@ PUBLIC int alloc_mem(int pid, int memsize) {
     return base;
 }
 
+
 PRIVATE void init_mm() {
     BOOT_PARAMS bp;
     get_boot_params(&bp);
@@ -53,3 +63,6 @@ PRIVATE void init_mm() {
 }
 
 
+PUBLIC int free_mem(int pid) {
+    return 0;
+}

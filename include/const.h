@@ -113,6 +113,8 @@ enum msgtype {
 
     /* Fork */
     FORK,
+    EXIT,
+    WAIT,
     GET_PID,
     GET_PPID,
 

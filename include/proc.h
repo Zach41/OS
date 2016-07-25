@@ -52,6 +52,8 @@ typedef struct s_proc {
 
     int p_parent;
 
+    int exit_status;		
+
     FILE* filp[NR_FILES];
 }PROCESS;
 
@@ -66,6 +68,7 @@ typedef struct s_task {
 #define NR_TASKS            5
 #define NR_PROCS            32
 #define NR_NATIVE_PROCS     4
+#define INIT                8
 
 #define STACK_SIZE_TESTA    0x8000
 #define STACK_SIZE_TESTB    STACK_SIZE_TESTA
