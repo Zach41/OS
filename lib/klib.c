@@ -63,44 +63,6 @@ PUBLIC void delay(int time) {
     }
 }
 
-/* 更精确的延迟函数 */
-/* 延迟milli_sec毫秒 */
-PUBLIC void milli_delay(int milli_sec) {
-    int ticks = get_ticks();
-    while (((get_ticks() - ticks) * 1000 / HZ) < milli_sec) {
-	;
-    }
-}
-
-PUBLIC int strlen(const char* str) {
-    int cnt = 0;
-    const char* p = str;
-    
-    while (*p) {
-	cnt++;
-	p++;
-    }
-
-    return cnt;
-}
-
-PUBLIC int strcmp(const char* s1, const char* s2) {
-    const char* p1 = s1;
-    const char* p2 = s2;
-    if (p1 == 0 || p2 == 0) {
-	return (p1 - p2);
-    }
-
-    while (*p1 && *p2) {
-	if (*p1 != *p2)
-	    return -1;
-	p1++;
-	p2++;
-    }
-
-    return (*p1 - *p2);
-}
-
 PUBLIC void dump_inode(struct inode* p_inode) {
     printl("Mode: %x\nSize: %d\nStart_Sect:%x\nNR_Sects:%d\n",
 	   p_inode -> i_mode,
@@ -152,3 +114,66 @@ PUBLIC int get_kernel_map(unsigned int *base, unsigned int* limit) {
 
     return 0;
 }
+
+struct posix_tar_header
+{				/* byte offset */
+	char name[100];		/*   0 */
+	char mode[8];		/* 100 */
+	char uid[8];		/* 108 */
+	char gid[8];		/* 116 */
+	char size[12];		/* 124 */
+	char mtime[12];		/* 136 */
+	char chksum[8];		/* 148 */
+	char typeflag;		/* 156 */
+	char linkname[100];	/* 157 */
+	char magic[6];		/* 257 */
+	char version[2];	/* 263 */
+	char uname[32];		/* 265 */
+	char gname[32];		/* 297 */
+	char devmajor[8];	/* 329 */
+	char devminor[8];	/* 337 */
+	char prefix[155];	/* 345 */
+	/* 500 */
+};
+
+PUBLIC void untar(const char* filename) {
+    printf("extract `%s`\n", filename);
+    int fd = open(filename, O_RDWR);
+    assert(fd != -1);
+
+    char buf[SECTOR_SIZE * 16];
+    int  chunk = sizeof(buf);
+
+    while (TRUE) {
+	/* 读tar文件头 */
+	read(fd, buf, SECTOR_SIZE);
+
+	if (buf[0] == 0)
+	    break;
+
+	struct posix_tar_header *header = (struct posix_tar_header*)buf;
+
+	char* p = header -> size;
+	int file_len = 0;
+	while (*p)
+	    file_len = file_len * 8 + (*p++ - '0');
+	int bytes_left = file_len;
+	int fdout = open(header -> name, O_CREAT | O_RDWR);
+	if (fdout == -1) {
+	    printf("failed to extract file: %s. Aborted.\n", header -> name);
+	    return;
+	}
+	printf("    %s (%d bytes)\n", header -> name, file_len);
+	while (bytes_left) {
+	    int iobytes = min(bytes_left, chunk);
+	    read(fd, buf, ((iobytes - 1) / SECTOR_SIZE + 1)*SECTOR_SIZE);
+	    write(fdout, buf, iobytes);
+	    bytes_left -= iobytes;
+	}
+	close(fdout);
+    }
+    close(fd);
+
+    printf("Done!\n");
+}
+

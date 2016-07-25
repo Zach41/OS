@@ -37,4 +37,7 @@ PUBLIC struct dev_drv_map dd_map[] = {
 /* 内存地址6MB~7MB为文件系统缓冲，一个文件最大为1MB */
 PUBLIC u8*          fsbuf      = (u8*)0x600000;
 PUBLIC const int    FSBUF_SIZE = 0x100000;
+
+PUBLIC u8*          mmbuf      = (u8*)0x700000;
+PUBLIC const int    MMBUF_SIZE = 0x100000;
     

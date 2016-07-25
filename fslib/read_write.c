@@ -86,7 +86,6 @@ PUBLIC int do_rdwt() {
 
 	if (pcaller -> filp[fd] -> fd_pos > pin -> i_size) {
 	    pin -> i_size = pcaller -> filp[fd] -> fd_pos;
-	    dump_inode(pin);
 	    sync_inode(pin);
 	}
 
@@ -94,29 +93,3 @@ PUBLIC int do_rdwt() {
     }
 }
 
-
-PUBLIC int read(int fd, void* buf, int count) {
-    MESSAGE msg;
-
-    msg.type = READ;
-    msg.CNT  = count;
-    msg.FD   = fd;
-    msg.BUF  = buf;
-
-    send_recv(BOTH, TASK_FS, &msg);
-
-    return msg.CNT;
-}
-
-PUBLIC int write(int fd, const void* buf, int count) {
-    MESSAGE msg;
-
-    msg.type = WRITE;
-    msg.FD   = fd;
-    msg.CNT  = count;
-    msg.BUF  = (void*)buf;
-
-    send_recv(BOTH, TASK_FS, &msg);
-
-    return msg.CNT;
-}

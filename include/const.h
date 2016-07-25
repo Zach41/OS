@@ -115,6 +115,8 @@ enum msgtype {
     FORK,
     EXIT,
     WAIT,
+    EXEC,
+    
     GET_PID,
     GET_PPID,
 
@@ -145,6 +147,7 @@ enum msgtype {
 #define	DEVICE		u.m3.m3i4
 #define	POSITION	u.m3.m3l1
 #define	BUF		u.m3.m3p2
+#define BUF_LEN         u.m3.m3i3
 
 /* FS messages */
 #define	FD		u.m3.m3i1
@@ -159,6 +162,7 @@ enum msgtype {
 #define	BUF		u.m3.m3p2
 #define	OFFSET		u.m3.m3i2
 #define	WHENCE		u.m3.m3i3
+
 
 #define PID             u.m3.m3i2
 #define STATUS          u.m3.m3i1

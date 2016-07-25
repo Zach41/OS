@@ -36,6 +36,8 @@ PUBLIC void    dump_inode(struct inode*);
 PUBLIC int     strcmp(const char*, const char*);
 PUBLIC void    get_boot_params(BOOT_PARAMS*);
 PUBLIC int     get_kernel_map(unsigned int *base, unsigned int *limit);
+PUBLIC void    untar(const char* filename);
+
 /* i8259.c */
 PUBLIC void    init_8259A();
 PUBLIC void    spurious_irq(int irq);
@@ -95,9 +97,9 @@ PUBLIC void select_console(int);
 /* print.c */
 /* PUBLIC int printf(const char* fmt, ...); */
 PUBLIC int printl(const char* fmt, ...);
-PUBLIC int sprintf(char*, const char* fmt, ...);
+/* PUBLIC int sprintf(char*, const char* fmt, ...); */
 
-PUBLIC int vsprintf(char* buf, const char* fmt, va_list args);
+/* public int vsprintf(char* buf, const char* fmt, va_list args); */
 
 /* systask.c */
 PUBLIC void task_sys();
@@ -132,6 +134,9 @@ PUBLIC int do_unlink();
 /* fslib/lseek.c */
 PUBLIC int do_lseek();
 
+/* fslib/do_stat.c */
+PUBLIC int do_stat();
+
 /* task_mm.c */
 PUBLIC void task_mm();
 
@@ -145,6 +150,13 @@ PUBLIC int free_mem(int pid);
 /* exit.c */
 PUBLIC void do_exit(int status);
 PUBLIC void do_wait();
+
+/* lib/exec.c */
+PUBLIC int execl(const char* path, const char* arg, ...);
+PUBLIC int execv(const char* path, char* argv[]);
+
+/* mmlib/do_exec.c */
+PUBLIC int do_exec();
 
 #endif
 

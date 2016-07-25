@@ -11,7 +11,7 @@ ASMBFLAGS	= -I boot/include/
 # flags for compiling kernel file
 ASMKFLAGS	= -I include/ -f elf
 CFLAGS		= -I include -m32 -c -fno-builtin -fno-stack-protector  -g
-LDFLAGS		= -m elf_i386 -s -Ttext $(ENTRYPOINT)
+LDFLAGS		= -m elf_i386  -Ttext $(ENTRYPOINT)
 #DASMFLAGS
 
 # TARGETS
@@ -23,11 +23,17 @@ OBJS		= kernel/kernel.o kernel/start.o kernel/i8259.o kernel/protect.o \
 		kernel/tty.o kernel/console.o kernel/printf.o lib/misc.o \
 		kernel/systask.o kernel/hd.o kernel/fs.o kernel/keymap.o fslib/misc.o \
 		fslib/open.o fslib/read_write.o fslib/link.o fslib/lseek.o kernel/mm.o \
-		lib/fork.o lib/getpid.o lib/exit.o
+		lib/fork.o lib/getpid.o lib/exit.o mmlib/do_exec.o fslib/do_stat.o
+
+LIBOBJS         = lib/libexit.o lib/libwait.o lib/libprintf.o lib/libopen.o \
+		lib/libclose.o lib/libfork.o lib/libwrite.o lib/libread.o \
+		lib/libvsprintf.o lib/libunlink.o lib/exec.o lib/libstat.o
+
+CRT             = lib/oscrt.a
 
 .PHONY: everything final image clean realclean all buildimg
 
-everything: $(ORANGESBOOT) $(ORANGESKERNEL)
+everything: $(ORANGESBOOT) $(ORANGESKERNEL) $(CRT)
 
 all: realclean everything
 
@@ -39,7 +45,7 @@ clean:
 	rm -f $(OBJS)
 
 realclean:
-	rm -f $(OBJS) $(ORANGESBOOT) $(ORANGESKERNEL)
+	rm -f $(OBJS) $(ORANGESBOOT) $(ORANGESKERNEL) $(LIBOBJS) $(CRT)
 
 buildimg:
 	dd if=boot/boot.bin of=a.img bs=512 count=1 conv=notrunc
@@ -56,8 +62,8 @@ boot/loader.bin: boot/loader.asm boot/include/load.inc boot/include/fat12hdr.inc
 				boot/include/pm.inc boot/include/lib.inc
 	$(ASM) $(ASMBFLAGS) -o $@ $<
 
-$(ORANGESKERNEL): $(OBJS)
-	$(LD) $(LDFLAGS) -o $(ORANGESKERNEL) $(OBJS)
+$(ORANGESKERNEL): $(OBJS) $(LIBOBJS)
+	$(LD) $(LDFLAGS) -o $(ORANGESKERNEL) $(OBJS) $(LIBOBJS)
 
 kernel/kernel.o: kernel/kernel.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
@@ -128,6 +134,12 @@ fslib/link.o: fslib/link.c
 fslib/lseek.o: fslib/lseek.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+fslib/do_stat.o: fslib/do_stat.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+mmlib/do_exec.o: mmlib/do_exec.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 lib/kliba.o: lib/kliba.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
@@ -148,3 +160,49 @@ lib/getpid.o: lib/getpid.c
 
 lib/exit.o: lib/exit.c
 	$(CC) $(CFLAGS) -o $@ $<
+
+# LIB OBJs
+
+lib/libexit.o: lib/libexit.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libwait.o: lib/libwait.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libprintf.o: lib/libprintf.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libopen.o: lib/libopen.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libclose.o: lib/libclose.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libfork.o: lib/libfork.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libwrite.o: lib/libwrite.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libread.o: lib/libread.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libvsprintf.o: lib/libvsprintf.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libunlink.o: lib/libunlink.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/exec.o: lib/exec.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/libstat.o: lib/libstat.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+# CRT
+lib/oscrt.a:
+	ar rcs lib/oscrt.a kernel/syscall.o lib/string.o lib/libopen.o lib/libread.o \
+	lib/libexit.o lib/libprintf.o lib/libclose.o lib/libfork.o lib/libwrite.o \
+	lib/misc.o lib/libvsprintf.o kernel/printf.o lib/libunlink.o
+
+# Command

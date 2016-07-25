@@ -3,30 +3,6 @@
 
 PRIVATE void cleanup(PROCESS* p);
 
-PUBLIC void exit(int status) {
-    MESSAGE msg;
-    msg.type   = EXIT;
-    msg.STATUS = status;
-
-    send_recv(BOTH, TASK_MM, &msg);
-
-    assert(msg.type == SYSCALL_RET);
-}
-
-PUBLIC int wait(int* status) {
-    MESSAGE msg;
-    msg.type = WAIT;
-
-    send_recv(BOTH, TASK_MM, &msg);
-
-    *status = msg.STATUS;
-
-    if (msg.PID == NO_TASK)
-	return -1;
-    else
-	return msg.PID;
-}
-
 PUBLIC void do_exit(int status) {
     int pid  = mm_msg.source;
     int ppid = proc_table[pid].p_parent;

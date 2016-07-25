@@ -45,3 +45,5 @@ extern const int          FSBUF_SIZE;
 /* MM */
 EXTERN MESSAGE            mm_msg;
 EXTERN int                memory_size;
+extern const int          MMBUF_SIZE;
+extern u8*                mmbuf;

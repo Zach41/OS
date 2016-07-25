@@ -320,28 +320,3 @@ PRIVATE int msg_receive(PROCESS *current, int src, MESSAGE* m) {
 
     return 0;
 }
-
-
-/* ring1~3进程调用 */
-PUBLIC int send_recv(int function, int src_dest, MESSAGE* msg) {
-    int ret = 0;
-    
-    if (function == RECEIVE) {
-	reset_msg(msg);
-    }
-
-    switch(function) {
-    case BOTH:
-	ret = sendrec(SEND, src_dest, msg);
-	if (ret == 0)
-	    ret = sendrec(RECEIVE, src_dest, msg);
-	break;
-    case SEND:
-    case RECEIVE:
-	ret = sendrec(function, src_dest, msg);
-    default:
-	assert(function == BOTH || function == SEND || function == RECEIVE);
-	break;
-    }
-    return ret;
-}

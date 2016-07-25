@@ -70,7 +70,7 @@ typedef struct s_task {
 #define NR_NATIVE_PROCS     4
 #define INIT                8
 
-#define STACK_SIZE_TESTA    0x8000
+#define STACK_SIZE_TESTA    0x4000
 #define STACK_SIZE_TESTB    STACK_SIZE_TESTA
 #define STACK_SIZE_TESTC    STACK_SIZE_TESTA
 #define STACK_SIZE_TTY      STACK_SIZE_TESTA

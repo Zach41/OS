@@ -11,7 +11,7 @@
 global	memcpy
 global	memset
 global  strcpy
-;; global  strlen
+global  strlen
 
 
 ; ------------------------------------------------------------------------

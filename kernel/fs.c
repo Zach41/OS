@@ -44,6 +44,11 @@ PUBLIC void task_fs() {
 	case EXIT:
 	    fs_msg.RETVAL = fs_exit();
 	    break;
+	case STAT:
+	    fs_msg.RETVAL = do_stat();
+	    break;
+	default:
+	    panic("FS:: unknown message.");
 	}
 
 	if (fs_msg.type != SUSPEND_PROC) {
@@ -204,10 +209,10 @@ PRIVATE void mkfs() {
 
     /* inode map */
     memset(fsbuf, 0, SECTOR_SIZE);
-    for (int i=0; i<NR_CONSOLE + 2; i++) {
-	fsbuf[0] |= 1<<i;	/* 0: reserved, 1: ROOT_NODE, 2: dev_tty0, 3: dev_tty1, 4: dev_tty2 */
+    for (int i=0; i<NR_CONSOLE + 3; i++) {
+	fsbuf[0] |= 1<<i;	/* 0: reserved, 1: ROOT_NODE, 2: dev_tty0, 3: dev_tty1, 4: dev_tty2, cmd.tar*/
     }
-    assert(fsbuf[0] == 0x1F);
+    assert(fsbuf[0] == 0x3F);
 
     WR_SECT(ROOT_DEV, 2);
 
@@ -234,11 +239,34 @@ PRIVATE void mkfs() {
 	WR_SECT(ROOT_DEV, 2 + sb.nr_imap_sects+i);
     }
 
+    /* cmd.tar */
+    int bit_offset      = INSTALL_START_SECT - sb.n_1st_sect + 1;
+    int bit_off_in_sect = bit_offset % SECTOR_BITS;
+    int bit_left        = INSTALL_NR_SECTS;
+    int cur_sect        = bit_offset / SECTOR_BITS;
+
+    RD_SECT(ROOT_DEV, 2+sb.nr_imap_sects+cur_sect);
+
+    while (bit_left) {
+	int byte_off = bit_off_in_sect / 8;
+	fsbuf[byte_off] |= (1 << (bit_off_in_sect % 8));
+
+	bit_left--;
+	bit_off_in_sect++;
+	if (bit_off_in_sect == SECTOR_BITS) {
+	    WR_SECT(ROOT_DEV, 2 + sb.nr_imap_sects + cur_sect);
+	    cur_sect++;
+	    RD_SECT(ROOT_DEV, 2 + sb.nr_imap_sects + cur_sect);
+	    bit_off_in_sect = 0;
+	}
+    }
+    WR_SECT(ROOT_DEV, 2 + sb.nr_imap_sects + cur_sect);
+    
     /* inode array */
     memset(fsbuf, 0, SECTOR_SIZE);
     struct inode *p_node = (struct inode*)fsbuf;
     p_node -> i_mode = I_DIRECTORY; /* 根目录 */
-    p_node -> i_size = DIR_ENTRY_SIZE * 4; /* `.`, `dev_tty0~2` */
+    p_node -> i_size = DIR_ENTRY_SIZE * 5; /* `.`, `dev_tty0~2` */
     p_node -> i_start_sect = sb.n_1st_sect;
     p_node -> i_nr_sects = NR_DEFAULT_FILE_SECTS;
 
@@ -251,6 +279,12 @@ PRIVATE void mkfs() {
 	p_node -> i_start_sect = MAKE_DEV(DEV_CHAR_TTY, i);
 	p_node -> i_nr_sects = 0;
     }
+
+    p_node = (struct inode*)(fsbuf + (NR_CONSOLE + 1) * INODE_SIZE);
+    p_node -> i_mode = I_REGULAR;
+    p_node -> i_size = INSTALL_NR_SECTS * SECTOR_SIZE;
+    p_node -> i_start_sect = INSTALL_START_SECT;
+    p_node -> i_nr_sects = INSTALL_NR_SECTS;
 
     WR_SECT(ROOT_DEV, 2 + sb.nr_smap_sects + sb.nr_imap_sects);
 
@@ -265,6 +299,9 @@ PRIVATE void mkfs() {
 	p_dir -> inode_nr = i+2;
 	sprintf(p_dir -> name, "dev_tty%d", i);
     }
+    p_dir++;
+    p_dir -> inode_nr = NR_CONSOLE + 2;
+    strcpy(p_dir -> name, "cmd.tar");
 
     WR_SECT(ROOT_DEV, sb.n_1st_sect);
 

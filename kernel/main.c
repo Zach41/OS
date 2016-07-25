@@ -9,6 +9,8 @@ void Init() {
     assert(fd_stdout == 1);
     int pid = getpid();
     printf("Init begins PID: %d\n", pid);
+
+    untar("/cmd.tar");
     pid = fork();
 
     if (pid) {
@@ -20,8 +22,7 @@ void Init() {
     } else {	
 	printf("child is running, parent pid:%d\n", getppid());
 
-	exit(111);
-	spin("child");
+	execl("/echo", "echo", "hello", "world", 0);
     }
 
     spin("Init Process");

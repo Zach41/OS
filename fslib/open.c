@@ -8,31 +8,6 @@ PRIVATE int alloc_smap_bit(int dev, int nr_sects_to_alloc);
 PRIVATE struct inode* new_inode(int dev, int inode_nr, int start_sect);
 PRIVATE void new_dir_entry(struct inode* dir_inode, int inode_nr, char *filename);
 
-PUBLIC int open(const char* pathname, int flags) {
-    MESSAGE msg;
-
-    msg.type = OPEN;
-
-    msg.PATHNAME = (void*)pathname;
-    msg.FLAGS    = flags;
-    msg.NAME_LEN = strlen(pathname);
-
-    send_recv(BOTH, TASK_FS, &msg);
-
-    assert(msg.type == SYSCALL_RET);
-
-    return msg.FD;
-}
-
-PUBLIC int close(int fd) {
-    MESSAGE msg;
-
-    msg.type = CLOSE;
-    msg.FD   = fd;
-    send_recv(BOTH, TASK_FS, &msg);
-
-    return msg.RETVAL;
-}
 PUBLIC int do_open() {
     int fd = -1;
     char pathname[MAX_PATH];
