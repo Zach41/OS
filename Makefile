@@ -31,6 +31,8 @@ LIBOBJS         = lib/libexit.o lib/libwait.o lib/libprintf.o lib/libopen.o \
 
 CRT             = lib/oscrt.a
 
+COMMAND         = command/echo.o command/pwd.o
+
 .PHONY: everything final image clean realclean all buildimg
 
 everything: $(ORANGESBOOT) $(ORANGESKERNEL) $(CRT)
@@ -42,7 +44,7 @@ final : all clean
 image : final buildimg
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(LIBOBJS) $(CRT)
 
 realclean:
 	rm -f $(OBJS) $(ORANGESBOOT) $(ORANGESKERNEL) $(LIBOBJS) $(CRT)
@@ -59,10 +61,10 @@ boot/boot.bin: boot/boot.asm boot/include/load.inc boot/include/fat12hdr.inc
 	$(ASM) $(ASMBFLAGS) -o $@ $<
 
 boot/loader.bin: boot/loader.asm boot/include/load.inc boot/include/fat12hdr.inc \
-				boot/include/pm.inc boot/include/lib.inc
+				boot/include/pm.inc boot/include/lib.inc 
 	$(ASM) $(ASMBFLAGS) -o $@ $<
 
-$(ORANGESKERNEL): $(OBJS) $(LIBOBJS)
+$(ORANGESKERNEL): $(OBJS) $(LIBOBJS) $(COMMAND)
 	$(LD) $(LDFLAGS) -o $(ORANGESKERNEL) $(OBJS) $(LIBOBJS)
 
 kernel/kernel.o: kernel/kernel.asm
@@ -203,6 +205,6 @@ lib/libstat.o: lib/libstat.c
 lib/oscrt.a:
 	ar rcs lib/oscrt.a kernel/syscall.o lib/string.o lib/libopen.o lib/libread.o \
 	lib/libexit.o lib/libprintf.o lib/libclose.o lib/libfork.o lib/libwrite.o \
-	lib/misc.o lib/libvsprintf.o kernel/printf.o lib/libunlink.o
+	lib/misc.o lib/libvsprintf.o kernel/printf.o lib/libunlink.o lib/exec.o
 
 # Command

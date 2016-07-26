@@ -1,4 +1,4 @@
-	extern main
+	extern main2
 	extern exit
 
 	bits 	32
@@ -10,7 +10,7 @@
 _start:
 	push 	eax
 	push	ecx
-	call 	main
+	call 	main2
 	push 	eax
 	call	exit
 

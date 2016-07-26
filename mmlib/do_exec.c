@@ -45,9 +45,8 @@ PUBLIC int do_exec() {
 	}
     }
 
-    /* 中心调整堆栈 */
+    /* 调整堆栈 */
     int orig_stack_len = mm_msg.BUF_LEN;
-    assert(mm_msg.BUF_LEN == 33);
     char stackcopy[PROC_ORIGIN_STACK];
     
 

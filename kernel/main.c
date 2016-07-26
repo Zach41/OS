@@ -11,53 +11,45 @@ void Init() {
     printf("Init begins PID: %d\n", pid);
 
     untar("/cmd.tar");
+    
+    char* ttys[] = {"/dev_tty1", "/dev_tty2"};
+
     pid = fork();
-
     if (pid) {
-	printf("parent is running, child pid:%d\n", pid);
-	int status;
-	int child = wait(&status);
-	printf("child %d exited with status: %d\n", child, status);
-	spin("parent");
-    } else {	
-	printf("child is running, parent pid:%d\n", getppid());
-
-	execl("/echo", "echo", "hello", "world", 0);
+	printf("Parent is running, child : %d\n", pid);
+    } else {
+	printf("Child is running, pid : %d\n", getpid());
+	close(fd_stdin);
+	close(fd_stdout);
+	simple_shell("/dev_tty1");
+	assert(0);
     }
 
+    pid = fork();
+    if (pid) {
+    	printf("Parent is running, child : %d\n", pid);
+    } else {
+    	printf("Child is running, pid : %d\n", getpid());
+    	close(fd_stdin);
+    	close(fd_stdout);
+    	simple_shell("/dev_tty2");
+    	assert(0);
+    }
+
+    while (TRUE) {
+	int s;
+	int child = wait(&s);
+	printf("child %d exited with status %d\n", child, s);
+    }
     spin("Init Process");
 }
 /* 操作系统第一个进程的代码 */
 void TestA() {
-    
     spin("TestA");
 }
 
 /* 第二个进程的代码 */
 void TestB() {
-    char tty_name[] = "/dev_tty1";
-    int fd_stdin  = open(tty_name, O_RDWR);
-    assert(fd_stdin == 0);
-    int fd_stdout = open(tty_name, O_RDWR);
-    assert(fd_stdout == 1);
-
-    char rdbuf[128];
-
-    while (TRUE) {
-	write(fd_stdout, "$ ", 2);
-	int r = read(fd_stdin, rdbuf, 100);
-	rdbuf[r] = 0;
-
-	if (strcmp(rdbuf, "hello") == 0) {
-	    write(fd_stdout, "Hello Zach!\n", 12);
-	} else {
-	    if (rdbuf[0]) {
-		/* write(fd_stdout, rdbuf, r); */
-		/* write(fd_stdout, "\n", 1); */
-		printf("[%s]\n", rdbuf);
-	    }
-	}
-    }
 
     spin("TestB");
 }
@@ -85,6 +77,7 @@ PUBLIC int kernel_main() {
     for (int i=0; i<NR_TASKS + NR_PROCS; i++) {
 	if (i >= NR_TASKS + NR_NATIVE_PROCS) {
 	    p_proc -> p_flags = FREE_SLOT;
+	    p_proc++;
 	    continue;
 	}
 	if (i < NR_TASKS) {
@@ -177,4 +170,61 @@ PUBLIC int kernel_main() {
     restart();
 
     while (TRUE) {}
+}
+
+PUBLIC void simple_shell(const char* tty_name) {
+    int fd_stdin  = open(tty_name, O_RDWR);
+    assert(fd_stdin == 0);
+    int fd_stdout = open(tty_name, O_RDWR);
+    assert(fd_stdout == 1);
+    char rdbuf[128];
+    char wbuf[128];
+    
+    while (TRUE) {
+	sprintf(wbuf, "%s$ ", tty_name);
+	write(fd_stdout, wbuf, strlen(wbuf));
+        int r = read(fd_stdin, rdbuf, 100);
+        rdbuf[r] = 0;
+
+        char* arg_stack[PROC_ORIGIN_STACK];
+        char* str;
+        char* p = rdbuf;
+        int word = 0;
+        int argc = 0;
+        char ch;
+        do {
+            ch = *p;
+            if (*p != ' ' && *p && !word) {
+                /* word开头 */
+                str = p;
+                word = 1;
+            }
+            if ((*p == ' ' || *p == 0) && word) {
+                /* word结尾 */
+                word = 0;
+                arg_stack[argc++] = str;
+                *p = 0;
+            }
+            p++;
+        } while(ch);
+        arg_stack[argc] = 0;
+
+        int fd = open(arg_stack[0], O_RDWR);
+        if (fd == -1) {
+            printf("Failed to open %s, no such file.\n", arg_stack[0]);
+        } else {
+            close(fd);
+            int pid = fork();
+
+            if (pid) {
+                int status;
+                wait(&status);
+                printf("PROC %s exited.\n", arg_stack[0]);
+            } else {
+                execv(arg_stack[0], arg_stack);
+            }
+        }
+    }
+    close(fd_stdin);
+    close(fd_stdout);
 }

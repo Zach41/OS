@@ -1,14 +1,14 @@
 #include "headers.h"
 #include "stdio.h"
 
-PUBLIC int execl(const char *path, const char *arg, ...) {
+PUBLIC int execl(char *path, char *arg, ...) {
     va_list parg = (va_list)&arg;
     char **p = (char**)parg;
 
     return execv(path, p);
 }
 
-PUBLIC int execv(const char* path, char* argv[]) {
+PUBLIC int execv(char* path, char* argv[]) {
     char **p = argv;
     char arg_stack[PROC_ORIGIN_STACK];
     int stack_len = 0;
@@ -23,7 +23,7 @@ PUBLIC int execv(const char* path, char* argv[]) {
 	stack_len += sizeof(char*);
     }
 
-    printf("STACK_LEN:%d\n", stack_len);
+    /* printf("STACK_LEN:%d\n", stack_len); */
 
     *((int*)(&arg_stack[stack_len])) = 0;
     stack_len += sizeof(char*);

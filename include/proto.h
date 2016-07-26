@@ -57,6 +57,7 @@ PUBLIC void TestA();
 PUBLIC void TestB();
 PUBLIC void TestC();
 PUBLIC void Init();
+PUBLIC void simple_shell(const char* tty_name);
 
 /* clock.c */
 PUBLIC void clock_handler(int);
@@ -150,10 +151,6 @@ PUBLIC int free_mem(int pid);
 /* exit.c */
 PUBLIC void do_exit(int status);
 PUBLIC void do_wait();
-
-/* lib/exec.c */
-PUBLIC int execl(const char* path, const char* arg, ...);
-PUBLIC int execv(const char* path, char* argv[]);
 
 /* mmlib/do_exec.c */
 PUBLIC int do_exec();

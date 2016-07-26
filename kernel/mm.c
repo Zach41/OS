@@ -26,7 +26,7 @@ PUBLIC void task_mm() {
 	    reply = 0;		/* 不需要返回，有子进程退出时，会在`cleanup`中发一个消息给父进程 */
 	    break;
 	case EXEC:
-	    printl("EXEC.\n");
+	    /* printl("EXEC.\n"); */
 	    mm_msg.RETVAL = do_exec();
 	    break;
 	default:

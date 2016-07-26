@@ -70,4 +70,7 @@ PUBLIC void exit(int status);
 
 PUBLIC int  stat(const char* pathname, struct stat* s);
 
+PUBLIC int execl(char* path, char* arg, ...);
+PUBLIC int execv(char* path, char* argv[]);
+
 #endif

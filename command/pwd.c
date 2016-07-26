@@ -1,7 +1,7 @@
 #include "stdio.h"
 
-int main(int argc, char* argvp[]) {
-    printf("Hello, this is pwd.\n");
+int main2(int argc, char* argv[]) {
+    printf("/\n");
 
     return 0;
 }
