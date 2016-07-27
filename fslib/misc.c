@@ -33,7 +33,7 @@ PUBLIC int search_file(char* path) {
     if (strip_path(filename, path, &dir_inode) != 0)
 	return 0;
 
-    if (filename == 0) {
+    if (*filename == 0) {
 	/* root dir */
 	return dir_inode -> i_num;
     }

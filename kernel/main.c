@@ -219,7 +219,7 @@ PUBLIC void simple_shell(const char* tty_name) {
             if (pid) {
                 int status;
                 wait(&status);
-                printf("PROC %s exited.\n", arg_stack[0]);
+                /* printf("PROC %s exited.\n", arg_stack[0]); */
             } else {
                 execv(arg_stack[0], arg_stack);
             }
