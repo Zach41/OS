@@ -12,4 +12,5 @@
 
 ###　OS
 
+![preview](preview.gif)
 
